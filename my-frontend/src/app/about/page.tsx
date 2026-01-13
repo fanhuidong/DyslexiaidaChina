@@ -38,7 +38,7 @@ export default async function AboutPage() {
 
   // 强转类型 (或者你可以在 api.ts 里泛型处理)
   const aboutData = data as AboutPageData;
-  const imageUrl = getStrapiMedia(aboutData.Cover?.url);
+  const imageUrl = getStrapiMedia(aboutData.Cover?.url || null);
 
   return (
     <main className="min-h-screen bg-white">
