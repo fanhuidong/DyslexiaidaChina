@@ -1,0 +1,21 @@
+{
+  "kind": "singleType",
+  "collectionName": "infographic_page_configs",
+  "info": {
+    "singularName": "infographic-page-config",
+    "pluralName": "infographic-page-configs",
+    "displayName": "InfographicPageConfig"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "Introduction": {
+      "type": "blocks"
+    }
+  }
+}

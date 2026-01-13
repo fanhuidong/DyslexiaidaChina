@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_quiz_question_items",
+  "info": {
+    "displayName": "QuestionItem"
+  },
+  "options": {},
+  "attributes": {
+    "QuestionText": {
+      "type": "text"
+    }
+  },
+  "config": {}
+}

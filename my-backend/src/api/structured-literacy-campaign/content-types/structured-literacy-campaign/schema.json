@@ -1,0 +1,31 @@
+{
+  "kind": "singleType",
+  "collectionName": "structured_literacy_campaigns",
+  "info": {
+    "singularName": "structured-literacy-campaign",
+    "pluralName": "structured-literacy-campaigns",
+    "displayName": "StructuredLiteracyCampaign"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "Content": {
+      "type": "blocks"
+    },
+    "Cover": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    }
+  }
+}

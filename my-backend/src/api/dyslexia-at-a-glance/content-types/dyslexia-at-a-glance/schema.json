@@ -1,0 +1,31 @@
+{
+  "kind": "singleType",
+  "collectionName": "dyslexia_at_a_glances",
+  "info": {
+    "singularName": "dyslexia-at-a-glance",
+    "pluralName": "dyslexia-at-a-glances",
+    "displayName": "DyslexiaAtAGlance"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "Content": {
+      "type": "blocks"
+    },
+    "Cover": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    }
+  }
+}

@@ -1,0 +1,69 @@
+/* 新增：引入 OpenDyslexic 字体库 (CDN) */
+@import url("https://cdn.jsdelivr.net/npm/opendyslexic@2.1.0-beta.1/open-dyslexic.min.css");
+@import "tailwindcss";
+/* 1. 引入 Tailwind 指令 (保持原样) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@theme {
+  /* Understood.org 风格核心配色 */
+  
+  /* 品牌主色：标志性的电光紫蓝 */
+  --color-primary: #5c4ae3;
+  --color-primary-hover: #4838b9;
+  
+  /* 品牌辅色：深邃的午夜蓝（用于页脚、标题） */
+  --color-secondary: #101828;
+  
+  /* 装饰色：柔和的薄荷绿（用于背景装饰、高亮） */
+  --color-accent: #dcfce7;
+  --color-accent-text: #166534;
+  
+  /* 背景色：极简白，让内容呼吸 */
+  --color-background: #ffffff;
+  --color-surface: #f9fafb;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-secondary antialiased;
+    /* 字体优化：让字体看起来更圆润现代 */
+    font-feature-settings: "ss01", "ss02", "cv01", "cv02";
+  }
+
+  /* 全局圆角策略：Understood 风格喜欢大圆角 */
+  .rounded-card {
+    border-radius: 1.5rem; /* 24px 圆角 */
+  }
+  
+  .rounded-btn {
+    border-radius: 9999px; /* 胶囊圆角 */
+  }
+}
+
+@utility container {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  max-width: 1280px; /* 更宽的容器 */
+}
+
+
+
+
+
+/* ... 其他已有样式保持不变 ... */
+
+/* 3. 👇 新增：定义易读模式的全局样式 */
+.dyslexia-mode {
+  /* 强制覆盖所有字体为 OpenDyslexic */
+  font-family: 'OpenDyslexic', sans-serif !important; 
+  /* 增加行高，减少拥挤感 */
+  line-height: 2 !important; 
+  /* 增加字间距，防止字母粘连 */
+  letter-spacing: 0.05em !important; 
+  /* 稍微加黑一点点，提高对比度 */
+  font-weight: 500 !important; 
+}

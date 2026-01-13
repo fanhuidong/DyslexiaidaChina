@@ -1,0 +1,21 @@
+{
+  "kind": "singleType",
+  "collectionName": "fact_sheet_page_configs",
+  "info": {
+    "singularName": "fact-sheet-page-config",
+    "pluralName": "fact-sheet-page-configs",
+    "displayName": "FactSheetPageConfig"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "Introduction": {
+      "type": "blocks"
+    }
+  }
+}

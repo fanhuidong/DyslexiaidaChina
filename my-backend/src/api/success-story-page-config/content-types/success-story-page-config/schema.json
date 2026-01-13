@@ -1,0 +1,31 @@
+{
+  "kind": "singleType",
+  "collectionName": "success_story_page_configs",
+  "info": {
+    "singularName": "success-story-page-config",
+    "pluralName": "success-story-page-configs",
+    "displayName": "SuccessStoryPageConfig"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "Introduction": {
+      "type": "blocks"
+    },
+    "FeaturedImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    }
+  }
+}

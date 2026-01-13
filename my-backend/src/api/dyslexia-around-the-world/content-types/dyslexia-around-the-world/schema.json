@@ -1,0 +1,31 @@
+{
+  "kind": "singleType",
+  "collectionName": "dyslexia_around_the_worlds",
+  "info": {
+    "singularName": "dyslexia-around-the-world",
+    "pluralName": "dyslexia-around-the-worlds",
+    "displayName": "DyslexiaAroundTheWorld"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "Content": {
+      "type": "blocks"
+    },
+    "Cover": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    }
+  }
+}

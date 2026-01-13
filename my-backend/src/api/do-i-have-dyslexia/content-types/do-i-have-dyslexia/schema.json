@@ -1,0 +1,48 @@
+{
+  "kind": "singleType",
+  "collectionName": "do_i_have_dyslexias",
+  "info": {
+    "singularName": "do-i-have-dyslexia",
+    "pluralName": "do-i-have-dyslexias",
+    "displayName": "DoIHaveDyslexia"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "Content": {
+      "type": "blocks"
+    },
+    "Cover": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "AssessmentTitle": {
+      "type": "string"
+    },
+    "Questions": {
+      "type": "component",
+      "component": "quiz.question-item",
+      "repeatable": true
+    },
+    "PassingScore": {
+      "type": "integer"
+    },
+    "ResultTitle": {
+      "type": "string"
+    },
+    "ResultContent": {
+      "type": "blocks"
+    }
+  }
+}
