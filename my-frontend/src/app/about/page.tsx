@@ -5,6 +5,8 @@ import { fetchAPI, getStrapiMedia } from "@/lib/api";
 import BlockRenderer from "@/components/Article/BlockRenderer";
 import { BlocksContent } from "@strapi/blocks-react-renderer";
 
+export const dynamic = 'force-dynamic'; //
+
 // 定义 About 页面的数据接口
 interface AboutPageData {
   id: number;

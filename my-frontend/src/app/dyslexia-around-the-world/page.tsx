@@ -1,5 +1,7 @@
 import SinglePageRenderer from "@/components/Page/SinglePageRenderer";
 
+export const dynamic = 'force-dynamic';
+
 export default function Page() {
   // 对应 Strapi 的 Single Type: DyslexiaAroundTheWorld
   return <SinglePageRenderer apiPath="/dyslexia-around-the-world" />;

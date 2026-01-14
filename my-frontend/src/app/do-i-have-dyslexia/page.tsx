@@ -6,6 +6,8 @@ import BlockRenderer from "@/components/Article/BlockRenderer";
 import AssessmentQuiz from "@/components/Page/AssessmentQuiz";
 import { BlocksContent } from "@strapi/blocks-react-renderer";
 
+export const dynamic = 'force-dynamic'; 
+
 // 定义这个页面特有的数据结构
 interface DoIHaveDyslexiaData {
   Title: string;
