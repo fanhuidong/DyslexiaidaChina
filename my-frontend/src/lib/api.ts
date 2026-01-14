@@ -3,7 +3,9 @@
 import qs from "qs";
 
 // 强制指定 Strapi 地址 (Windows 上用 127.0.0.1 比 localhost 更稳)
-const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://127.0.0.1:8888";
+// const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://127.0.0.1:8888";
+const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL ;
+
 
 export function getStrapiURL(path = "") {
   return `${STRAPI_URL}${path}`;
@@ -33,14 +35,17 @@ export async function fetchAPI(
 
 
     const response = await fetch(requestUrl, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      // 禁用缓存，确保拿到最新数据 (开发时很有用)
-      cache: "no-store", 
-      ...options,
-    });
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  // 👇 1. 先把外面的选项展开 (这样如果有冲突，下面的会覆盖上面的)
+  ...options,
+
+  // 👇 2. 这里的设置才是“王法” (强制覆盖)
+  cache: "no-store", 
+  next: { revalidate: 0 }, // 👈 双保险：告诉 Next.js 0秒更新一次
+});
 
     if (!response.ok) {
       console.error(`❌ API 错误: ${response.status} ${response.statusText}`);
