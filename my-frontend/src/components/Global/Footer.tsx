@@ -3,6 +3,9 @@ import Image from 'next/image';
 import { fetchAPI, getStrapiMedia } from '@/lib/api';
 import { isDevelopment } from '@/config/env';
 
+// 强制动态渲染，避免缓存问题
+export const dynamic = 'force-dynamic';
+
 interface FooterConfig {
   FooterText?: string | null;
   WechatQRCode?: {
@@ -102,7 +105,7 @@ export default async function Footer() {
                     alt={footerConfig?.WechatQRCode?.alternativeText || "微信群二维码"}
                     fill
                     className="object-contain"
-                    unoptimized={true}
+                    unoptimized={process.env.NODE_ENV === "development"}
                     priority
                     sizes="112px"
                     onError={(e) => {
@@ -110,6 +113,7 @@ export default async function Footer() {
                       console.error("❌ [Footer] 二维码图片加载失败");
                       console.error("❌ [Footer] 图片 URL:", qrCodeUrl);
                       console.error("❌ [Footer] 原始 URL:", rawUrl);
+                      console.error("❌ [Footer] 环境:", process.env.NODE_ENV);
                       const target = e.target as HTMLImageElement;
                       target.style.display = 'none';
                     }}
