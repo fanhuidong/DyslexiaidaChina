@@ -17,6 +17,7 @@ export function getStrapiURL(path = "") {
   if (isDevelopment) {
     return `${API_URL}${path}`;
   }
+  // 生产环境客户端：返回相对路径，走代理
   return path;
 }
 
@@ -36,12 +37,23 @@ export function getStrapiMedia(url: string | null | undefined) {
     if (!isDevelopment) {
       try {
         const urlObj = new URL(url);
-        // 如果是后端服务器的 URL，提取路径部分走代理
-        if (urlObj.hostname === "43.135.124.98" || urlObj.hostname === "localhost" || urlObj.hostname.includes("43.135.124.98")) {
+        // 如果是后端服务器的 URL（HTTP），提取路径部分走代理
+        // 这样可以避免 Mixed Content 错误
+        if (urlObj.protocol === "http:" && 
+            (urlObj.hostname === "43.135.124.98" || 
+             urlObj.hostname === "localhost" || 
+             urlObj.hostname.includes("43.135.124.98"))) {
           const relativePath = urlObj.pathname + urlObj.search;
+          console.log(`🖼️ [getStrapiMedia] 生产环境转换: ${url} -> ${relativePath}`);
           return relativePath;
         }
+        // 如果是 HTTPS URL，直接返回（不需要转换）
+        if (urlObj.protocol === "https:") {
+          console.log(`🖼️ [getStrapiMedia] HTTPS URL: ${url}`);
+          return url;
+        }
       } catch (e) {
+        console.error(`❌ [getStrapiMedia] URL 解析失败: ${url}`, e);
         // URL 解析失败，继续使用原逻辑
       }
     }

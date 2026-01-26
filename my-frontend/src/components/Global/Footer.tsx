@@ -18,13 +18,16 @@ export default async function Footer() {
   const footerConfig = await fetchAPI("/global", { 
     populate: "*"
   }) as FooterConfig | null;
-  const qrCodeUrl = getStrapiMedia(footerConfig?.WechatQRCode?.url || null);
+  
+  // 获取原始 URL
+  const rawUrl = footerConfig?.WechatQRCode?.url || null;
+  const qrCodeUrl = getStrapiMedia(rawUrl);
 
   // 调试信息（生产环境也输出，方便排查）
-  if (process.env.NODE_ENV === "development") {
-    console.log("🔍 [Footer] 二维码 URL:", qrCodeUrl);
-    console.log("🔍 [Footer] 原始数据:", footerConfig?.WechatQRCode);
-  }
+  console.log("🔍 [Footer] 原始 URL:", rawUrl);
+  console.log("🔍 [Footer] 处理后的 URL:", qrCodeUrl);
+  console.log("🔍 [Footer] 完整配置:", JSON.stringify(footerConfig?.WechatQRCode, null, 2));
+  console.log("🔍 [Footer] 环境:", process.env.NODE_ENV);
 
   return (
     <footer className="text-white pt-16 pb-10 mt-12" style={{ backgroundColor: '#002938' }}>
@@ -93,21 +96,28 @@ export default async function Footer() {
             <p className="text-gray-300 text-sm mb-4">微信群二维码</p>
             <div className="relative w-28 h-28 bg-white rounded-lg p-2 flex items-center justify-center shadow-md">
               {qrCodeUrl ? (
-                <Image
-                  src={qrCodeUrl}
-                  alt={footerConfig?.WechatQRCode?.alternativeText || "微信群二维码"}
-                  width={100}
-                  height={100}
-                  className="object-contain"
-                  unoptimized={isDevelopment}
-                  priority
-                  onError={(e) => {
-                    // 图片加载失败时的处理
-                    console.error("❌ [Footer] 二维码图片加载失败:", qrCodeUrl);
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                  }}
-                />
+                <div className="relative w-full h-full">
+                  <Image
+                    src={qrCodeUrl}
+                    alt={footerConfig?.WechatQRCode?.alternativeText || "微信群二维码"}
+                    fill
+                    className="object-contain"
+                    unoptimized={true}
+                    priority
+                    sizes="112px"
+                    onError={(e) => {
+                      // 图片加载失败时的处理
+                      console.error("❌ [Footer] 二维码图片加载失败");
+                      console.error("❌ [Footer] 图片 URL:", qrCodeUrl);
+                      console.error("❌ [Footer] 原始 URL:", rawUrl);
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                    }}
+                    onLoad={() => {
+                      console.log("✅ [Footer] 二维码图片加载成功:", qrCodeUrl);
+                    }}
+                  />
+                </div>
               ) : (
                 <div className="text-gray-400 text-xs text-center p-2 leading-relaxed">
                   请在 Strapi 后台<br/>上传二维码
