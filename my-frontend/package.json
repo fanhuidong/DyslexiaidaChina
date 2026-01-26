@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "postinstall": "prisma generate || echo 'Prisma generate skipped (DATABASE_URL not set)'",
-    "build": "prisma generate && next build",
-    "build:skip-type-check": "prisma generate && next build --no-lint",
+    "prisma:generate": "node -e \"process.env.DATABASE_URL = process.env.DATABASE_URL || 'mysql://placeholder:placeholder@localhost:3306/placeholder'; require('child_process').execSync('npx prisma generate', {stdio: 'inherit'})\"",
+    "build": "npm run prisma:generate && next build",
+    "build:skip-type-check": "npm run prisma:generate && next build --no-lint",
     "start": "next start",
     "lint": "eslint",
     "type-check": "tsc --noEmit"

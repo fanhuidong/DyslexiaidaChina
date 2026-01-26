@@ -172,7 +172,7 @@ DATABASE_PASSWORD=your_password
 DATABASE_SSL=false
 
 # 前端 URL（用于 CORS）
-FRONTEND_URL=https://your-frontend-domain.vercel.app
+FRONTEND_URL=https://dyslexiaidachinav1.vercel.app/
 ```
 
 **生成密钥**（在本地执行，然后复制到服务器）：
