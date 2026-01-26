@@ -1,0 +1,21 @@
+{
+  "kind": "singleType",
+  "collectionName": "visions",
+  "info": {
+    "singularName": "vision",
+    "pluralName": "visions",
+    "displayName": "Vision"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "Content": {
+      "type": "blocks"
+    }
+  }
+}

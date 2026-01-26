@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+// 用户表
+model User {
+  id            String    @id @default(cuid())
+  phone         String    @unique // 核心字段：手机号
+  password      String?   // 核心字段：加密后的密码
+  nickname      String?   // 昵称 (注册时默认生成，可修改)
+  avatar        String?
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  comments      Comment[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+// 验证码临时表 (用于校验手机号)
+model VerificationCode {
+  id        String   @id @default(cuid())
+  phone     String
+  code      String   // 例如 "123456"
+  type      String   // "REGISTER", "LOGIN", "RESET_PWD"
+  expiresAt DateTime // 过期时间 (通常5分钟)
+  createdAt DateTime @default(now())
+
+  @@index([phone, type])
+  @@map("verification_codes")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String   @db.Text // MySQL text类型
+  isDeleted Boolean  @default(false) // 软删除标记
+  createdAt DateTime @default(now())
+  
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  parentId  String?
+  parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id])
+  children  Comment[] @relation("CommentReplies")
+  
+  rootId    String?  // 顶层楼ID，用于通知聚合
+
+  @@map("comments")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String
+  isRead    Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}

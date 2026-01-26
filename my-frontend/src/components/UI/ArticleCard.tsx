@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Article } from '@/types';
@@ -7,26 +9,32 @@ import { Calendar, ArrowRight } from 'lucide-react';
 
 export default function ArticleCard({ article }: { article: Article }) {
   const imageUrl = getStrapiMedia(article.Cover?.url);
+  const [imageError, setImageError] = useState(false);
 
   return (
     <Link 
       href={`/article/${article.documentId}`} 
-      // 👇 布局核心：flex-col (手机竖排) -> md:flex-row (电脑横排)
-      className="group flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 items-stretch"
+      // 👇 Understood.org 风格：卡片设计，圆角 16px，轻微阴影，hover 时加深
+      className="group flex flex-col md:flex-row bg-surface rounded-card overflow-hidden hover:shadow-card-hover transition-all duration-300 border border-gray-100 items-stretch hover:-translate-y-1"
     >
       {/* 🖼️ 左侧图片区域 */}
       {/* 手机端 w-full (全宽) / 电脑端 w-1/3 (占三分之一宽度) */}
       <div className="relative w-full md:w-2/5 min-h-[240px] md:min-h-full shrink-0 overflow-hidden">
-        {imageUrl ? (
+        {imageUrl && !imageError ? (
           <Image
             src={imageUrl}
             alt={article.Title}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-105"
+            onError={() => {
+              console.error(`❌ 图片加载失败: ${imageUrl}`);
+              setImageError(true);
+            }}
+            unoptimized={process.env.NODE_ENV === "development"}
           />
         ) : (
           <div className="w-full h-full bg-secondary/5 flex items-center justify-center text-secondary/30">
-             No Image
+            {imageError ? "图片加载失败" : "No Image"}
           </div>
         )}
         

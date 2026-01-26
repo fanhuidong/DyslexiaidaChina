@@ -1,0 +1,21 @@
+{
+  "kind": "singleType",
+  "collectionName": "partner_page_configs",
+  "info": {
+    "singularName": "partner-page-config",
+    "pluralName": "partner-page-configs",
+    "displayName": "PartnerPageConfig"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "Subtitle": {
+      "type": "string"
+    }
+  }
+}

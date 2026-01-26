@@ -1,44 +1,112 @@
 /* 新增：引入 OpenDyslexic 字体库 (CDN) */
 @import url("https://cdn.jsdelivr.net/npm/opendyslexic@2.1.0-beta.1/open-dyslexic.min.css");
 @import "tailwindcss";
+
+/* 设置 Lexend 为默认字体 */
+:root {
+  --font-lexend: 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+
+body {
+  font-family: var(--font-lexend);
+}
 /* 1. 引入 Tailwind 指令 (保持原样) */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @theme {
-  /* Understood.org 风格核心配色 */
+  /* Understood.org 风格核心配色 - 阅读障碍友好设计 */
   
-  /* 品牌主色：标志性的电光紫蓝 */
-  --color-primary: #5c4ae3;
+  /* 主色调 (Primary Colors) */
+  /* 深午夜蓝：用于主标题和重要文字，比纯黑更柔和，减少光晕效应 */
+  --color-navy: #122C49;
+  --color-navy-dark: #000033;
+  
+  /* 品牌蓝/紫：用于按钮、链接、强调元素 */
+  --color-primary: #5C4AE4;
   --color-primary-hover: #4838b9;
+  --color-primary-light: #7c6ee8;
+  --color-primary-dark: #3d2f9e;
   
-  /* 品牌辅色：深邃的午夜蓝（用于页脚、标题） */
-  --color-secondary: #101828;
+  /* 辅助色 (Accents) - 用于区分板块，色彩饱和度适中 */
+  /* 薄荷绿：常用于背景装饰或成功状态 */
+  --color-mint: #A5DCC7;
+  --color-mint-dark: #7BC4A8;
   
-  /* 装饰色：柔和的薄荷绿（用于背景装饰、高亮） */
-  --color-accent: #dcfce7;
-  --color-accent-text: #166534;
+  /* 珊瑚红：用于插画或强调 */
+  --color-coral: #F59288;
+  --color-coral-dark: #E87A6E;
   
-  /* 背景色：极简白，让内容呼吸 */
-  --color-background: #ffffff;
-  --color-surface: #f9fafb;
+  /* 背景色：米色/淡黄，减少屏幕蓝光刺激，绝对不要用刺眼的纯白 */
+  --color-background: #F4F3F1;
+  --color-surface: #FFFFFF;
+  --color-off-white: #F4F3F1;
+  
+  /* 文本颜色 */
+  --color-text-primary: #122C49; /* 深午夜蓝，非纯黑 */
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748B;
+  
+  /* 品牌辅色：用于页脚、次要标题 */
+  --color-secondary: #122C49;
+  --color-secondary-light: #1e293b;
 }
 
 @layer base {
   body {
-    @apply bg-background text-secondary antialiased;
-    /* 字体优化：让字体看起来更圆润现代 */
+    @apply bg-off-white text-text-primary antialiased;
+    /* 字体优化：阅读障碍友好 */
     font-feature-settings: "ss01", "ss02", "cv01", "cv02";
+    /* 行高：至少 1.6 到 1.8，防止跳行 */
+    line-height: 1.7;
+    /* 字间距：稍微加宽，防止字母粘连 */
+    letter-spacing: 0.01em;
   }
 
   /* 全局圆角策略：Understood 风格喜欢大圆角 */
   .rounded-card {
-    border-radius: 1.5rem; /* 24px 圆角 */
+    border-radius: 1rem; /* 16px 圆角，卡片标准 */
+  }
+  
+  .rounded-card-large {
+    border-radius: 1.5rem; /* 24px 圆角，大卡片 */
   }
   
   .rounded-btn {
-    border-radius: 9999px; /* 胶囊圆角 */
+    border-radius: 9999px; /* 胶囊圆角，按钮标准 */
+  }
+  
+  /* 段落宽度限制：60-80 字符，防止视线在大屏幕上迷失 */
+  .prose {
+    max-width: 65ch; /* 约 65 字符 */
+  }
+  
+  /* 标题样式：深午夜蓝，非纯黑 */
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--color-navy);
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+  
+  /* 链接样式：品牌蓝紫，明显的焦点框 */
+  a {
+    color: var(--color-primary);
+    transition: all 0.2s ease;
+  }
+  
+  a:hover {
+    color: var(--color-primary-hover);
+  }
+  
+  /* 焦点框：无障碍设计硬性要求，黑黄相间或高亮色边框 */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(92, 74, 228, 0.2);
   }
 }
 
@@ -56,7 +124,29 @@
 
 /* ... 其他已有样式保持不变 ... */
 
-/* 3. 👇 新增：定义易读模式的全局样式 */
+/* 3. 👇 按钮样式：全圆角，hover 位移，明显的焦点框 */
+.btn-primary {
+  @apply px-6 py-3 bg-primary text-white font-bold;
+  @apply hover:bg-primary-hover hover:-translate-y-0.5;
+  @apply focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2;
+  @apply transition-all duration-200;
+  border-radius: 9999px; /* 胶囊圆角 */
+  box-shadow: 0 2px 4px rgba(92, 74, 228, 0.2);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 4px 8px rgba(92, 74, 228, 0.3);
+}
+
+.btn-secondary {
+  @apply px-6 py-3 bg-surface border-2 border-navy text-navy font-bold;
+  @apply hover:bg-navy hover:text-white hover:-translate-y-0.5;
+  @apply focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2;
+  @apply transition-all duration-200;
+  border-radius: 9999px; /* 胶囊圆角 */
+}
+
+/* 4. 👇 定义易读模式的全局样式 */
 .dyslexia-mode {
   /* 强制覆盖所有字体为 OpenDyslexic */
   font-family: 'OpenDyslexic', sans-serif !important; 

@@ -44,9 +44,9 @@ export default async function DoIHaveDyslexiaPage() {
   const imageUrl = getStrapiMedia(pageData.Cover?.url || null);
 
   return (
-    <main className="min-h-screen bg-white pb-20">
+    <main className="min-h-screen bg-off-white pb-20">
       {/* 头部 */}
-      <div className="bg-[#b91c1c] text-white py-16 md:py-24">
+      <div className="bg-[#5c4ae3] text-white py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-4">
             {pageData.Title}

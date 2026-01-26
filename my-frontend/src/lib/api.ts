@@ -1,33 +1,65 @@
 import qs from "qs";
-
-// 1. 硬编码您的香港服务器 IP 
-// 这样在 Vercel 构建时绝对不会因为环境变量读不到而报错 (undefined)
-const REMOTE_API_URL = "http://43.135.124.98:1337";
+import { API_URL, isDevelopment } from "@/config/env";
 
 export function getStrapiURL(path = "") {
   // 2. 智能环境判断 (核心逻辑！)
   
-  // 情况 A: 在服务器端运行 (Vercel 构建时，或 SSR 直播模式时)
-  // 👉 直接连香港 IP，速度最快，而且服务器对服务器没有 HTTPS 限制
+  // 情况 A: 在服务器端运行 (SSR 或构建时)
+  // 开发环境：直接连本地后端
+  // 生产环境：连远程服务器
   if (typeof window === "undefined") {
-    return `${REMOTE_API_URL}${path}`;
+    return `${API_URL}${path}`;
   }
 
   // 情况 B: 在客户端运行 (用户的手机/电脑浏览器)
-  // 👉 返回空字符串 + 路径 (例如 /api/about)，变成相对路径
-  // 这样请求会自动走 next.config.mjs 里配置的代理，从而解决 Mixed Content (HTTPS) 问题
+  // 开发环境：直接连本地后端
+  // 生产环境：返回相对路径，走 next.config.ts 里配置的代理
+  if (isDevelopment) {
+    return `${API_URL}${path}`;
+  }
   return path;
 }
 
-export function getStrapiMedia(url: string | null) {
-  if (url == null) {
+export function getStrapiMedia(url: string | null | undefined) {
+  // 处理各种空值情况
+  if (url == null || url === "" || url === undefined) {
+    if (isDevelopment) {
+      console.warn(`⚠️ [getStrapiMedia] 图片 URL 为空:`, url);
+    }
     return null;
   }
-  if (url.startsWith("http") || url.startsWith("//")) {
+  
+  // 如果已经是完整 URL（http/https），直接返回
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    if (isDevelopment) {
+      console.log(`🖼️ [getStrapiMedia] 完整URL: ${url}`);
+    }
     return url;
   }
+  
+  // 如果是以 // 开头，补充协议
+  if (url.startsWith("//")) {
+    // 使用后端配置的协议
+    const protocol = isDevelopment ? "http" : "https";
+    const finalUrl = `${protocol}:${url}`;
+    if (isDevelopment) {
+      console.log(`🖼️ [getStrapiMedia] 协议相对URL: ${url} -> ${finalUrl}`);
+    }
+    return finalUrl;
+  }
+  
+  // 确保相对路径以 / 开头
+  const normalizedPath = url.startsWith("/") ? url : `/${url}`;
+  
   // 图片也走上面的智能逻辑：服务器端拿绝对路径，客户端拿相对路径(走代理)
-  return getStrapiURL(url);
+  const finalUrl = getStrapiURL(normalizedPath);
+  
+  // 开发环境添加调试日志
+  if (isDevelopment) {
+    console.log(`🖼️ [getStrapiMedia] 原始URL: "${url}" -> 规范化: "${normalizedPath}" -> 最终URL: "${finalUrl}"`);
+  }
+  
+  return finalUrl;
 }
 
 export async function fetchAPI(
@@ -36,12 +68,29 @@ export async function fetchAPI(
   options = {}
 ) {
   try {
+    // 合并查询参数，使用 Strapi 兼容的格式
+    const queryString = qs.stringify(urlParamsObject, {
+      encodeValuesOnly: true, // 只编码值，不编码键
+      addQueryPrefix: false, // 不自动添加 ?
+    });
+    
+    // 处理路径中可能已存在的查询参数
+    const pathWithoutQuery = path.split('?')[0];
+    const existingQuery = path.includes('?') ? path.split('?')[1] : '';
+    
     // 合并查询参数
-    const queryString = qs.stringify(urlParamsObject);
+    let finalQuery = '';
+    if (existingQuery && queryString) {
+      finalQuery = `?${existingQuery}&${queryString}`;
+    } else if (existingQuery) {
+      finalQuery = `?${existingQuery}`;
+    } else if (queryString) {
+      finalQuery = `?${queryString}`;
+    }
     
     // 获取请求地址 (会自动根据环境变身)
     const requestUrl = getStrapiURL(
-      `/api${path}${queryString ? `?${queryString}` : ""}`
+      `/api${pathWithoutQuery}${finalQuery}`
     );
 
     // 打印一下日志，方便去 Vercel 后台看它到底用的哪个地址

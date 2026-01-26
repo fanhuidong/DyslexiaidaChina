@@ -33,9 +33,9 @@ export default async function InfographicsPage() {
   const intro = config?.Introduction;
 
   return (
-    <main className="min-h-screen bg-white pb-20">
+    <main className="min-h-screen bg-off-white pb-20">
       {/* ==================== Header (统一风格) ==================== */}
-      <div className="bg-[#b91c1c] text-white py-16 md:py-24">
+      <div className="bg-[#5c4ae3] text-white py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-4">
             {title}
@@ -110,7 +110,7 @@ export default async function InfographicsPage() {
                         href={imageUrl} 
                         download
                         target="_blank"
-                        className="flex items-center justify-center gap-2 w-full py-2 rounded-lg bg-gray-50 text-gray-700 text-sm font-bold hover:bg-[#b91c1c] hover:text-white transition-colors"
+                        className="flex items-center justify-center gap-2 w-full py-2 rounded-lg bg-gray-50 text-gray-700 text-sm font-bold hover:bg-[#5c4ae3] hover:text-white transition-colors"
                       >
                         <Download size={16} /> 保存图片
                       </a>

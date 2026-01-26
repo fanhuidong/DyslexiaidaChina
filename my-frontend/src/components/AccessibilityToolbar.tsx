@@ -117,7 +117,7 @@ export default function AccessibilityToolbar() {
           title={isHoverMode ? "关闭指读模式" : "开启鼠标指读"}
           className={`p-3 rounded-full transition-all duration-200 shadow-sm ${
             isHoverMode 
-              ? "bg-[#b91c1c] text-white rotate-0 scale-110 ring-4 ring-red-100" 
+              ? "bg-[#5c4ae3] text-white rotate-0 scale-110 ring-4 ring-purple-100" 
               : "bg-gray-50 text-gray-700 hover:bg-gray-100 hover:scale-105"
           }`}
         >
@@ -130,7 +130,7 @@ export default function AccessibilityToolbar() {
           title="切换阅读障碍专用字体"
           className={`p-3 rounded-full transition-all duration-200 shadow-sm ${
             isDyslexiaMode 
-              ? "bg-[#b91c1c] text-white scale-110" 
+              ? "bg-[#5c4ae3] text-white scale-110" 
               : "bg-gray-50 text-gray-700 hover:bg-gray-100 hover:scale-105"
           }`}
         >
@@ -143,7 +143,7 @@ export default function AccessibilityToolbar() {
           title="开启阅读聚焦尺"
           className={`p-3 rounded-full transition-all duration-200 shadow-sm ${
             showRuler 
-              ? "bg-[#b91c1c] text-white scale-110" 
+              ? "bg-[#5c4ae3] text-white scale-110" 
               : "bg-gray-50 text-gray-700 hover:bg-gray-100 hover:scale-105"
           }`}
         >

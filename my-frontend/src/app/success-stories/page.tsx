@@ -32,9 +32,9 @@ export default async function SuccessStoriesPage() {
   const featuredImageUrl = getStrapiMedia(featuredImage?.url || null);
 
   return (
-    <main className="min-h-screen bg-white pb-20">
+    <main className="min-h-screen bg-off-white pb-20">
       {/* Header */}
-      <div className="bg-[#b91c1c] text-white py-16 md:py-24">
+      <div className="bg-[#5c4ae3] text-white py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-4">
             {title}
@@ -97,11 +97,11 @@ export default async function SuccessStoriesPage() {
 
                   <div className="p-6 md:p-8 flex-1 flex flex-col justify-center">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2">
-                      <h3 className="text-2xl font-bold text-gray-900 group-hover:text-[#b91c1c] transition-colors">
+                      <h3 className="text-2xl font-bold text-gray-900 group-hover:text-[#5c4ae3] transition-colors">
                         {story.Name}
                       </h3>
                       {story.Title && (
-                        <span className="text-xs font-bold text-[#b91c1c] uppercase tracking-wider bg-red-50 px-2 py-1 rounded w-fit">
+                        <span className="text-xs font-bold text-[#5c4ae3] uppercase tracking-wider bg-purple-50 px-2 py-1 rounded w-fit">
                           {story.Title}
                         </span>
                       )}
@@ -111,7 +111,7 @@ export default async function SuccessStoriesPage() {
                       {story.Summary}
                     </p>
                     
-                    <div className="flex items-center text-sm font-bold text-gray-900 group-hover:text-[#b91c1c] mt-auto">
+                    <div className="flex items-center text-sm font-bold text-gray-900 group-hover:text-[#5c4ae3] mt-auto">
                       阅读完整故事 <ChevronRight size={16} className="ml-1 transition-transform group-hover:translate-x-1" />
                     </div>
                   </div>

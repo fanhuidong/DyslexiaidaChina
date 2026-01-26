@@ -35,9 +35,9 @@ export default async function SuccessStoryDetailPage({ params }: PageProps) {
   const photoUrl = getStrapiMedia(story.Photo?.url || null);
 
   return (
-    <main className="min-h-screen bg-white pb-20">
+    <main className="min-h-screen bg-off-white pb-20">
       {/* ==================== 1. Header (人名标题) ==================== */}
-      <div className="bg-[#b91c1c] text-white py-16 md:py-24 relative">
+      <div className="bg-[#5c4ae3] text-white py-16 md:py-24 relative">
         <div className="container mx-auto px-4 text-center">
           {/* 返回按钮 */}
           <Link 
@@ -82,8 +82,8 @@ export default async function SuccessStoryDetailPage({ params }: PageProps) {
             </div>
             
             {/* 引用摘要 (显示在照片下方) */}
-            <div className="mt-6 p-6 bg-red-50 rounded-xl border border-red-100">
-              <p className="text-[#b91c1c] font-serif italic text-lg leading-relaxed">
+            <div className="mt-6 p-6 bg-purple-50 rounded-xl border border-purple-100">
+              <p className="text-[#5c4ae3] font-serif italic text-lg leading-relaxed">
                 “{story.Summary}”
               </p>
             </div>
@@ -91,7 +91,7 @@ export default async function SuccessStoryDetailPage({ params }: PageProps) {
 
           {/* 右侧：完整故事 */}
           <div className="w-full md:w-2/3">
-            <div className="prose prose-lg md:prose-xl max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-a:text-[#b91c1c]">
+            <div className="prose prose-lg md:prose-xl max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-a:text-[#5c4ae3]">
               {/* 渲染富文本内容 */}
               {story.StoryContent ? (
                 <BlockRenderer content={story.StoryContent} />

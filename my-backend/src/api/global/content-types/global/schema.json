@@ -29,6 +29,13 @@
     },
     "FooterText": {
       "type": "text"
+    },
+    "WechatQRCode": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
     }
   }
 }

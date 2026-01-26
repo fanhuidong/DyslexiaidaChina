@@ -63,11 +63,11 @@ export default function Hero({ slides }: { slides: HeroSlide[] }) {
                   {/* 文字内容 */}
                   <div className="absolute bottom-0 left-0 w-full p-6 md:pb-16 z-10 flex justify-center">
                     <div className="max-w-5xl w-full text-center text-white transform transition-transform duration-300 group-hover/slide:-translate-y-2">
-                      <h2 className="text-3xl md:text-5xl font-black mb-4 leading-tight tracking-tight drop-shadow-lg">
+                      <h2 className="text-3xl md:text-5xl font-black mb-4 leading-dyslexia-tight tracking-tight drop-shadow-lg">
                         {slide.Headline}
                       </h2>
                       {slide.SubHeadline && (
-                        <p className="text-lg md:text-xl opacity-90 max-w-3xl mx-auto leading-relaxed font-medium drop-shadow-md">
+                        <p className="text-lg md:text-xl opacity-90 max-w-3xl mx-auto leading-dyslexia font-medium drop-shadow-md">
                           {slide.SubHeadline}
                         </p>
                       )}

@@ -43,7 +43,7 @@ export default async function AboutPage() {
   const imageUrl = getStrapiMedia(aboutData.Cover?.url || null);
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-off-white">
       {/* 头部标题区域 */}
       <div className="bg-secondary text-white py-20 md:py-28">
         <div className="container mx-auto px-4 text-center">

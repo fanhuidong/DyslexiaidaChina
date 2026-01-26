@@ -40,7 +40,7 @@ export default function AssessmentQuiz({
   const isRisk = score >= passingScore;
 
   return (
-    <div className="mt-12 bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+    <div className="mt-12 bg-surface rounded-card-large border border-gray-200 overflow-hidden shadow-card">
       {/* 标题栏 */}
       <div className="bg-secondary p-6 md:p-8">
         <h2 className="text-2xl md:text-3xl font-black text-white flex items-center gap-3">
@@ -60,10 +60,10 @@ export default function AssessmentQuiz({
             <div 
               key={q.id}
               onClick={() => handleToggle(q.id)}
-              className={`group flex items-start gap-4 p-4 rounded-xl cursor-pointer transition-all duration-200 border ${
+              className={`group flex items-start gap-4 p-4 rounded-card cursor-pointer transition-all duration-200 border ${
                 isSelected 
                   ? "bg-primary/5 border-primary/30 shadow-sm" 
-                  : "bg-white border-gray-100 hover:border-gray-300 hover:shadow-sm"
+                  : "bg-surface border-gray-100 hover:border-gray-300 hover:shadow-card"
               }`}
             >
               {/* 复选框图标 */}
@@ -89,7 +89,7 @@ export default function AssessmentQuiz({
         {!showResult ? (
           <button 
             onClick={() => setShowResult(true)}
-            className="w-full md:w-auto bg-primary text-white px-8 py-3 rounded-lg font-bold hover:bg-red-700 transition-transform active:scale-95 shadow-md"
+            className="w-full md:w-auto bg-primary text-white px-8 py-3 rounded-full font-bold hover:bg-primary-hover hover:-translate-y-0.5 transition-all active:scale-95 shadow-md focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
           >
             查看评估结果
           </button>
@@ -105,7 +105,7 @@ export default function AssessmentQuiz({
 
       {/* 结果显示区 */}
       {showResult && (
-        <div className={`p-8 animate-in slide-in-from-bottom-5 fade-in duration-500 ${isRisk ? "bg-red-50" : "bg-green-50"}`}>
+        <div className={`p-8 animate-in slide-in-from-bottom-5 fade-in duration-500 ${isRisk ? "bg-purple-50" : "bg-green-50"}`}>
           <div className="flex items-start gap-4">
             <AlertCircle className={`w-8 h-8 shrink-0 ${isRisk ? "text-primary" : "text-green-600"}`} />
             <div>
@@ -114,10 +114,10 @@ export default function AssessmentQuiz({
               </h3>
               
               {isRisk ? (
-                <div className="prose prose-red prose-sm md:prose-base">
+                <div className="prose prose-purple prose-sm md:prose-base">
                    {/* 渲染后台配置的结果富文本 */}
                    {resultContent && <BlocksRenderer content={resultContent} />}
-                   <p className="mt-4 text-xs text-gray-500 border-t border-red-200 pt-2">
+                   <p className="mt-4 text-xs text-gray-500 border-t border-purple-200 pt-2">
                      *注：本自我评估并非专业医疗诊断。如您勾选了 {passingScore} 项以上，建议咨询专业人士。
                    </p>
                 </div>

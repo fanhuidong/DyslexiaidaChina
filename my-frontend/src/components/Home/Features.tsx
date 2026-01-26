@@ -10,7 +10,7 @@ export default function Features() {
       subTitle: "FIND A PROVIDER",
       icon: <MapPin className="w-10 h-10 mb-4" />,
       href: "/provider",
-      color: "bg-primary", // 红色
+      color: "bg-primary", // Understood.org 紫色主题
       hoverColor: "hover:bg-primary-hover",
     },
     {

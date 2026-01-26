@@ -16,7 +16,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
   const imageUrl = getStrapiMedia(article.Cover?.url);
 
   return (
-    <article className="min-h-screen bg-white">
+    <article className="min-h-screen bg-off-white">
       {/* 顶部导航 */}
       <div className="bg-secondary text-white py-4">
         <div className="container mx-auto px-4">

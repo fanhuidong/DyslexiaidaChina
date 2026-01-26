@@ -1,85 +1,125 @@
 import Link from 'next/link';
-import { Facebook, Twitter, Instagram, Linkedin, ArrowRight } from 'lucide-react';
+import Image from 'next/image';
+import { fetchAPI, getStrapiMedia } from '@/lib/api';
 
-export default function Footer() {
+interface FooterConfig {
+  FooterText?: string | null;
+  WechatQRCode?: {
+    url: string;
+    alternativeText?: string;
+    width?: number;
+    height?: number;
+  } | null;
+}
+
+export default async function Footer() {
+  // 从 Strapi 后台获取页脚配置（包括微信二维码）
+  const footerConfig = await fetchAPI("/global", { 
+    populate: "*"
+  }) as FooterConfig | null;
+  const qrCodeUrl = getStrapiMedia(footerConfig?.WechatQRCode?.url || null);
+
   return (
-    <footer className="bg-secondary text-white pt-20 pb-10 rounded-t-[2.5rem] mt-10">
-      <div className="container mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
-          
-          {/* 左侧：Logo 与 订阅模块 */}
-          <div className="lg:col-span-5 space-y-8">
-            {/* Logo 改名位置 👇 */}
-            <h2 className="text-3xl font-black tracking-tight text-white">
-              DyslexiaidaChina <span className="text-primary-hover">.</span>
+    <footer className="text-white pt-16 pb-10 mt-12" style={{ backgroundColor: '#002938' }}>
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+          {/* Logo 与描述 */}
+          <div className="md:col-span-1">
+            <h2 className="text-3xl font-black tracking-tight text-white mb-4">
+              DyslexiaidaChina
             </h2>
-            <p className="text-gray-300 text-lg leading-relaxed max-w-md">
-              致力于为思维和学习方式不同的人，创造更美好的世界。加入我们的社区。
+            <p className="text-gray-300 text-sm leading-relaxed">
+              {footerConfig?.FooterText || "致力于为思维和学习方式不同的人，创造更美好的世界。加入我们的社区。"}
             </p>
-            
-            <div className="flex flex-col sm:flex-row gap-3">
-              <input 
-                type="email" 
-                placeholder="输入您的邮箱地址" 
-                className="px-6 py-4 rounded-full bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary w-full"
-              />
-              <button className="px-8 py-4 bg-primary hover:bg-primary-hover text-white font-bold rounded-full transition-all flex items-center justify-center whitespace-nowrap">
-                订阅 <ArrowRight className="ml-2 w-5 h-5" />
-              </button>
-            </div>
           </div>
 
-          {/* 右侧：链接矩阵 */}
-          <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-8">
-            <div>
-              <h3 className="text-lg font-bold mb-6 text-accent">关于我们</h3>
-              <ul className="space-y-4 text-gray-300 font-medium">
-                <li><Link href="/about" className="hover:text-white transition-colors">我们的使命</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">影响力报告</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">职业机会</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">新闻中心</Link></li>
-              </ul>
-            </div>
+          {/* 关于我们链接 */}
+          <div className="md:col-span-1">
+            <h3 className="text-lg font-bold mb-5 text-white">关于我们</h3>
+            <ul className="space-y-3">
+              <li>
+                <Link 
+                  href="/about/vision" 
+                  className="text-gray-300 hover:text-primary transition-colors text-sm font-medium block"
+                >
+                  我们的愿景
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/about/story" 
+                  className="text-gray-300 hover:text-primary transition-colors text-sm font-medium block"
+                >
+                  我们的故事
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/about/team" 
+                  className="text-gray-300 hover:text-primary transition-colors text-sm font-medium block"
+                >
+                  我们的团队
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/about/contact" 
+                  className="text-gray-300 hover:text-primary transition-colors text-sm font-medium block"
+                >
+                  联系我们
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/about/partners" 
+                  className="text-gray-300 hover:text-primary transition-colors text-sm font-medium block"
+                >
+                  我们的伙伴
+                </Link>
+              </li>
+            </ul>
+          </div>
 
-            <div>
-              <h3 className="text-lg font-bold mb-6 text-accent">探索主题</h3>
-              <ul className="space-y-4 text-gray-300 font-medium">
-                <li><Link href="#" className="hover:text-white transition-colors">阅读障碍</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">多动症 (ADHD)</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">运算障碍</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">校园生活</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-bold mb-6 text-accent">支持与参与</h3>
-              <ul className="space-y-4 text-gray-300 font-medium">
-                <li><Link href="/donate" className="hover:text-white transition-colors">捐赠支持</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">成为合作伙伴</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">分享你的故事</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">联系我们</Link></li>
-              </ul>
+          {/* 二维码区域 */}
+          <div className="md:col-span-1">
+            <h3 className="text-lg font-bold mb-5 text-white">联系我们</h3>
+            <p className="text-gray-300 text-sm mb-4">微信群二维码</p>
+            <div className="relative w-28 h-28 bg-white rounded-lg p-2 flex items-center justify-center shadow-md">
+              {qrCodeUrl ? (
+                <Image
+                  src={qrCodeUrl}
+                  alt={footerConfig?.WechatQRCode?.alternativeText || "微信群二维码"}
+                  width={100}
+                  height={100}
+                  className="object-contain"
+                  unoptimized
+                />
+              ) : (
+                <div className="text-gray-400 text-xs text-center p-2 leading-relaxed">
+                  请在 Strapi 后台<br/>上传二维码
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         {/* 底部版权栏 */}
-        <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
-          <div className="flex flex-wrap justify-center gap-6 mb-4 md:mb-0">
-            <Link href="#" className="hover:text-white">隐私政策</Link>
-            <Link href="#" className="hover:text-white">使用条款</Link>
-            <Link href="#" className="hover:text-white">无障碍声明</Link>
-          </div>
-          
-          <div className="flex items-center gap-4">
-             <div className="flex space-x-4">
-              <Facebook className="w-5 h-5 hover:text-primary cursor-pointer transition-colors" />
-              <Instagram className="w-5 h-5 hover:text-primary cursor-pointer transition-colors" />
-              <Linkedin className="w-5 h-5 hover:text-primary cursor-pointer transition-colors" />
-              <Twitter className="w-5 h-5 hover:text-primary cursor-pointer transition-colors" />
+        <div className="border-t border-white/10 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-400">
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link href="#" className="hover:text-white transition-colors">
+                隐私政策
+              </Link>
+              <span className="text-gray-500">|</span>
+              <Link href="#" className="hover:text-white transition-colors">
+                使用条款
+              </Link>
+              <span className="text-gray-500">|</span>
+              <Link href="#" className="hover:text-white transition-colors">
+                无障碍声明
+              </Link>
             </div>
-            {/* 版权名改名位置 👇 */}
-            <span className="ml-4">&copy; 2026 DyslexiaidaChina.</span>
+            <span>&copy; 2026 DyslexiaidaChina.</span>
           </div>
         </div>
       </div>

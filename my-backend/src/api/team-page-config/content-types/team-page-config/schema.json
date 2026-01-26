@@ -1,0 +1,21 @@
+{
+  "kind": "singleType",
+  "collectionName": "team_page_configs",
+  "info": {
+    "singularName": "team-page-config",
+    "pluralName": "team-page-configs",
+    "displayName": "TeamPageConfig"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "Subtitle": {
+      "type": "string"
+    }
+  }
+}
