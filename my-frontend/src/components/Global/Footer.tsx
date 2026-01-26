@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { fetchAPI, getStrapiMedia } from '@/lib/api';
+import { isDevelopment } from '@/config/env';
 
 interface FooterConfig {
   FooterText?: string | null;
@@ -18,6 +19,12 @@ export default async function Footer() {
     populate: "*"
   }) as FooterConfig | null;
   const qrCodeUrl = getStrapiMedia(footerConfig?.WechatQRCode?.url || null);
+
+  // 调试信息（生产环境也输出，方便排查）
+  if (process.env.NODE_ENV === "development") {
+    console.log("🔍 [Footer] 二维码 URL:", qrCodeUrl);
+    console.log("🔍 [Footer] 原始数据:", footerConfig?.WechatQRCode);
+  }
 
   return (
     <footer className="text-white pt-16 pb-10 mt-12" style={{ backgroundColor: '#002938' }}>
@@ -92,7 +99,14 @@ export default async function Footer() {
                   width={100}
                   height={100}
                   className="object-contain"
-                  unoptimized
+                  unoptimized={isDevelopment}
+                  priority
+                  onError={(e) => {
+                    // 图片加载失败时的处理
+                    console.error("❌ [Footer] 二维码图片加载失败:", qrCodeUrl);
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                  }}
                 />
               ) : (
                 <div className="text-gray-400 text-xs text-center p-2 leading-relaxed">

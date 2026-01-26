@@ -29,8 +29,25 @@ export function getStrapiMedia(url: string | null | undefined) {
     return null;
   }
   
-  // 如果已经是完整 URL（http/https），直接返回
+  // 如果已经是完整 URL（http/https），需要特殊处理
   if (url.startsWith("http://") || url.startsWith("https://")) {
+    // 在生产环境的客户端，将完整 URL 转换为相对路径，走代理
+    if (!isDevelopment && typeof window !== "undefined") {
+      try {
+        const urlObj = new URL(url);
+        // 如果是后端服务器的 URL，提取路径部分走代理
+        if (urlObj.hostname === "43.135.124.98" || urlObj.hostname === "localhost") {
+          const relativePath = urlObj.pathname + urlObj.search;
+          if (isDevelopment) {
+            console.log(`🖼️ [getStrapiMedia] 完整URL转相对路径: ${url} -> ${relativePath}`);
+          }
+          return relativePath;
+        }
+      } catch (e) {
+        // URL 解析失败，直接返回原 URL
+      }
+    }
+    
     if (isDevelopment) {
       console.log(`🖼️ [getStrapiMedia] 完整URL: ${url}`);
     }
@@ -39,6 +56,15 @@ export function getStrapiMedia(url: string | null | undefined) {
   
   // 如果是以 // 开头，补充协议
   if (url.startsWith("//")) {
+    // 在生产环境的客户端，转换为相对路径
+    if (!isDevelopment && typeof window !== "undefined") {
+      // 提取路径部分
+      const pathMatch = url.match(/\/\/[^\/]+(\/.*)/);
+      if (pathMatch) {
+        return pathMatch[1];
+      }
+    }
+    
     // 使用后端配置的协议
     const protocol = isDevelopment ? "http" : "https";
     const finalUrl = `${protocol}:${url}`;
