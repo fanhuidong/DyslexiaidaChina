@@ -109,6 +109,8 @@ export async function fetchAPI(
   urlParamsObject = {},
   options = {}
 ) {
+  let requestUrl = '';
+  
   try {
     // 合并查询参数，使用 Strapi 兼容的格式
     const queryString = qs.stringify(urlParamsObject, {
@@ -131,7 +133,7 @@ export async function fetchAPI(
     }
     
     // 获取请求地址 (会自动根据环境变身)
-    const requestUrl = getStrapiURL(
+    requestUrl = getStrapiURL(
       `/api${pathWithoutQuery}${finalQuery}`
     );
 
@@ -151,15 +153,104 @@ export async function fetchAPI(
     });
 
     if (!response.ok) {
+      // 对于 404 错误，静默处理，不显示错误信息
+      if (response.status === 404) {
+        console.warn(`⚠️ API 资源不存在 (404): ${requestUrl} - 这可能是正常的，如果 Strapi 中还没有该内容`);
+        return null;
+      }
+      
+      // 对于 405 Method Not Allowed 错误
+      if (response.status === 405) {
+        console.error(`❌ 方法不允许 (405): ${requestUrl} - 请检查 API 端点是否支持该 HTTP 方法`);
+        return null;
+      }
+      
       console.error(`❌ API 错误: ${response.status} ${response.statusText} | URL: ${requestUrl}`);
+      
+      // 尝试解析错误响应（检查 Content-Type）
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        try {
+          const errorData = await response.json();
+          if (errorData.error) {
+            console.error(`❌ API 错误详情:`, errorData.error);
+          }
+        } catch (e) {
+          // 如果无法解析 JSON，忽略
+          console.warn(`⚠️ 无法解析错误响应为 JSON: ${e}`);
+        }
+      } else {
+        // 如果不是 JSON，尝试读取文本
+        try {
+          const text = await response.text();
+          if (text && text.length < 200) {
+            console.error(`❌ API 错误响应: ${text}`);
+          }
+        } catch (e) {
+          // 忽略文本读取错误
+        }
+      }
+      
       return null;
     }
 
-    const data = await response.json();
+    // 检查响应是否为 JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      console.error(`❌ 响应不是 JSON 格式: ${contentType} | URL: ${requestUrl}`);
+      return null;
+    }
+
+    let data;
+    try {
+      data = await response.json();
+    } catch (e: any) {
+      console.error(`❌ JSON 解析失败: ${e?.message} | URL: ${requestUrl}`);
+      return null;
+    }
+    
+    // 检查 Strapi 返回的错误格式
+    if (data.error) {
+      // 对于 404 错误，静默处理
+      if (data.error.status === 404) {
+        console.warn(`⚠️ Strapi 资源不存在 (404): ${requestUrl} - 这可能是正常的，如果 Strapi 中还没有该内容`);
+        return null;
+      }
+      
+      console.error(`❌ Strapi API 错误:`, {
+        status: data.error.status,
+        name: data.error.name,
+        message: data.error.message,
+        url: requestUrl,
+      });
+      return null;
+    }
+    
     return data.data;
 
-  } catch (error) {
-    console.error("❌ 网络连接失败:", error);
+  } catch (error: any) {
+    // 提供更详细的错误信息
+    const errorMessage = error?.message || String(error);
+    const isNetworkError = errorMessage.includes('fetch failed') || 
+                          errorMessage.includes('ECONNREFUSED') ||
+                          errorMessage.includes('ENOTFOUND') ||
+                          errorMessage.includes('network');
+    
+    if (isNetworkError) {
+      console.error(`❌ 网络连接失败: ${requestUrl || path}`);
+      console.error(`❌ 错误详情: ${errorMessage}`);
+      console.error(`❌ 提示: 请确保后端服务器正在运行 (${API_URL})`);
+      if (isDevelopment) {
+        console.error(`❌ 开发环境: 请确保 Strapi 后端在 http://localhost:8888 运行`);
+      }
+    } else {
+      console.error(`❌ API 请求失败: ${errorMessage}`);
+      if (requestUrl) {
+        console.error(`❌ 请求 URL: ${requestUrl}`);
+      }
+    }
+    
+    // 静默返回 null，让调用方处理
     return null;
   }
 }

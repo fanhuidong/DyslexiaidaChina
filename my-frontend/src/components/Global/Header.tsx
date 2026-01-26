@@ -1,16 +1,22 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ChevronDown, LogIn } from 'lucide-react';
+import { useSession, signOut } from 'next-auth/react';
+import { Menu, X, ChevronDown, LogIn, User, LogOut } from 'lucide-react';
+import { NotificationBell } from '@/components/MessageBoard/NotificationBell';
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isResourcesMenuOpen, setIsResourcesMenuOpen] = useState(false);
   const [isAboutMenuOpen, setIsAboutMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [userMenuWidth, setUserMenuWidth] = useState<number | undefined>(undefined);
+  const userButtonRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
+  const { data: session, status } = useSession();
 
   // 滚动监听
   useEffect(() => {
@@ -25,6 +31,14 @@ export default function Header() {
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
+
+  // 同步下拉菜单宽度与按钮宽度
+  useEffect(() => {
+    if (isUserMenuOpen && userButtonRef.current) {
+      const buttonWidth = userButtonRef.current.offsetWidth;
+      setUserMenuWidth(buttonWidth);
+    }
+  }, [isUserMenuOpen, session]);
 
   const toggleMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -165,15 +179,81 @@ export default function Header() {
             </Link>
           </nav>
 
-          {/* 登录按钮 - 桌面端 - 距离屏幕最右边90px */}
-          <div className="hidden lg:flex items-center absolute right-[90px]">
-            <Link 
-              href="/login" 
-              className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white font-bold text-[15px] rounded-full hover:bg-primary-hover hover:-translate-y-0.5 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-            >
-              <LogIn className="w-4 h-4" />
-              <span>登录</span>
-            </Link>
+          {/* 用户信息/登录按钮 - 桌面端 - 距离屏幕最右边90px */}
+          <div className="hidden lg:flex items-center gap-4 absolute right-[90px]">
+            {status === 'loading' ? (
+              // 加载中状态
+              <div className="px-6 py-2.5">
+                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            ) : session?.user ? (
+              // 已登录：显示通知铃铛和用户名下拉菜单
+              <>
+                <NotificationBell />
+                <div className="relative">
+                <button 
+                  ref={userButtonRef}
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white font-bold text-[15px] rounded-full hover:bg-primary-hover hover:-translate-y-0.5 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 whitespace-nowrap"
+                >
+                  {session.user.role === 'ADMIN' && (
+                    <span className="text-[10px] font-normal opacity-90">管理</span>
+                  )}
+                  <User className="w-4 h-4" />
+                  <span>{session.user.name || session.user.phone || '用户'}</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {/* 用户下拉菜单 */}
+                {isUserMenuOpen && (
+                  <>
+                    {/* 点击外部关闭菜单的遮罩层 */}
+                    <div 
+                      className="fixed inset-0 z-40"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    />
+                    <div 
+                      className="absolute top-full right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-100 py-2 z-[60]"
+                      style={{ width: userMenuWidth ? `${userMenuWidth}px` : 'auto', minWidth: 'fit-content' }}
+                    >
+                      <div className="px-4 py-2 border-b border-gray-100">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-semibold text-gray-900 truncate">{session.user.name || '用户'}</p>
+                          {session.user.role === 'ADMIN' && (
+                            <span className="text-[10px] font-normal text-yellow-600 bg-yellow-100 px-1.5 py-0.5 rounded flex-shrink-0">管理</span>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1 truncate">{session.user.phone}</p>
+                      </div>
+                      <button
+                        onClick={async () => {
+                          setIsUserMenuOpen(false);
+                          await signOut({ 
+                            callbackUrl: '/',
+                            redirect: true 
+                          });
+                        }}
+                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
+                        type="button"
+                      >
+                        <LogOut className="w-4 h-4 flex-shrink-0" />
+                        <span>退出登录</span>
+                      </button>
+                    </div>
+                  </>
+                )}
+                </div>
+              </>
+            ) : (
+              // 未登录：显示登录按钮
+              <Link 
+                href="/login" 
+                className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white font-bold text-[15px] rounded-full hover:bg-primary-hover hover:-translate-y-0.5 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              >
+                <LogIn className="w-4 h-4" />
+                <span>登录</span>
+              </Link>
+            )}
           </div>
 
           {/* 移动端菜单按钮 (Mobile Menu Button) */}
@@ -236,15 +316,64 @@ export default function Header() {
 
             <Link href="/message-board" className="py-3 border-b border-gray-50" onClick={closeMobileMenu}>留言板</Link>
 
-            {/* 登录按钮 - 移动端 */}
+            {/* 用户信息/登录按钮 - 移动端 */}
             <div className="mt-4 px-4 pb-4">
-              <Link 
-                href="/login" 
-                className="flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white font-bold text-base rounded-full hover:bg-primary-hover transition-all duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-              >
-                <LogIn className="w-4 h-4" />
-                <span>登录</span>
-              </Link>
+              {status === 'loading' ? (
+                // 加载中状态
+                <div className="flex items-center justify-center py-3">
+                  <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              ) : session?.user ? (
+                // 已登录：显示用户信息和退出按钮
+                <div className="space-y-3">
+                    <div className="px-4 py-3 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center relative">
+                            {session.user.role === 'ADMIN' && (
+                              <span className="absolute -top-1 -left-1 text-[8px] font-normal bg-yellow-400 text-yellow-900 px-1 py-0.5 rounded">管理</span>
+                            )}
+                            <User className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <p className="text-sm font-semibold text-gray-900">{session.user.name || '用户'}</p>
+                              {session.user.role === 'ADMIN' && (
+                                <span className="text-[10px] font-normal text-yellow-600 bg-yellow-100 px-1.5 py-0.5 rounded">管理</span>
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-500">{session.user.phone}</p>
+                          </div>
+                        </div>
+                        <NotificationBell />
+                      </div>
+                    </div>
+                  <button
+                    onClick={async () => {
+                      closeMobileMenu();
+                      await signOut({ 
+                        callbackUrl: '/',
+                        redirect: true 
+                      });
+                    }}
+                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 font-bold text-base rounded-full hover:bg-gray-200 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+                    type="button"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>退出登录</span>
+                  </button>
+                </div>
+              ) : (
+                // 未登录：显示登录按钮
+                <Link 
+                  href="/login" 
+                  onClick={closeMobileMenu}
+                  className="flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white font-bold text-base rounded-full hover:bg-primary-hover transition-all duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                >
+                  <LogIn className="w-4 h-4" />
+                  <span>登录</span>
+                </Link>
+              )}
             </div>
           </nav>
         </div>

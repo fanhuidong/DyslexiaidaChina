@@ -6,7 +6,14 @@ import ArticleCard from "@/components/UI/ArticleCard";
 
 export default async function Home() {
   // 1. 获取文章列表（轮播图已屏蔽）
-  const articles = await fetchAPI("/articles?sort=publishedAt:desc&pagination[limit]=6&populate=*");
+  // 使用 try-catch 处理 API 错误，避免页面崩溃
+  let articles = null;
+  try {
+    articles = await fetchAPI("/articles?sort=publishedAt:desc&pagination[limit]=6&populate=*");
+  } catch (error) {
+    console.error('获取文章列表失败:', error);
+    // 如果 API 失败，articles 保持为 null，页面会显示空状态
+  }
 
   return (
     <main className="min-h-screen bg-off-white">

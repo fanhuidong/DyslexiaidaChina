@@ -16,12 +16,36 @@ import { hashPassword } from '@/lib/auth-utils';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { phone, password, verificationCode } = body;
+    const { username, phone, password, verificationCode } = body;
 
     // 验证必填字段
-    if (!phone || !password) {
+    if (!username || !phone || !password) {
       return NextResponse.json(
-        { error: '请填写所有必填字段（手机号、密码）' },
+        { error: '请填写所有必填字段（用户名、手机号、密码）' },
+        { status: 400 }
+      );
+    }
+
+    // 验证用户名
+    const trimmedUsername = username.trim();
+    if (trimmedUsername.length === 0) {
+      return NextResponse.json(
+        { error: '用户名不能为空' },
+        { status: 400 }
+      );
+    }
+
+    // 验证用户名长度（2-20个字符）
+    if (trimmedUsername.length < 2) {
+      return NextResponse.json(
+        { error: '用户名至少需要2个字符' },
+        { status: 400 }
+      );
+    }
+
+    if (trimmedUsername.length > 20) {
+      return NextResponse.json(
+        { error: '用户名不能超过20个字符' },
         { status: 400 }
       );
     }
@@ -84,15 +108,12 @@ export async function POST(request: NextRequest) {
     // 使用 bcrypt 加密密码
     const hashedPassword = await hashPassword(password);
 
-    // 生成默认昵称（手机号后4位）
-    const defaultNickname = `用户${phone.slice(-4)}`;
-
     // 创建新用户
     const user = await db.user.create({
       data: {
         phone: phone.trim(),
         password: hashedPassword,
-        nickname: defaultNickname,
+        nickname: trimmedUsername, // 使用用户输入的用户名
         role: 'USER', // 默认角色
       },
       // 不返回密码字段

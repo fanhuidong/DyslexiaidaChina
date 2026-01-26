@@ -1,0 +1,20 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "regions": ["hkg1"],
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "rewrites": [
+    {
+      "source": "/api/message-board/:path*",
+      "destination": "/api/message-board/:path*"
+    },
+    {
+      "source": "/api/notifications/:path*",
+      "destination": "/api/notifications/:path*"
+    }
+  ]
+}

@@ -21,6 +21,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   secret: process.env.AUTH_SECRET || 'fallback-secret-key-for-development-only', // 开发环境备用密钥
   trustHost: true, // 信任主机（用于开发环境）
-  // 添加 basePath，确保 API 路由正确
-  basePath: '/api/auth',
+  // NextAuth v5 会自动处理 basePath，不需要手动设置
 });

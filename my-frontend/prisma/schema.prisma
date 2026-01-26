@@ -1,5 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// prisma/schema.prisma
 
 generator client {
   provider = "prisma-client-js"
@@ -15,12 +14,11 @@ enum Role {
   ADMIN
 }
 
-// 用户表
 model User {
   id            String    @id @default(cuid())
-  phone         String    @unique // 核心字段：手机号
-  password      String?   // 核心字段：加密后的密码
-  nickname      String?   // 昵称 (注册时默认生成，可修改)
+  phone         String    @unique
+  password      String?
+  nickname      String?
   avatar        String?
   role          Role      @default(USER)
   createdAt     DateTime  @default(now())
@@ -28,50 +26,86 @@ model User {
 
   comments      Comment[]
   notifications Notification[]
-
-  @@map("users")
+  posts         MessageBoardPost[]
+  replies       MessageBoardReply[]
 }
 
-// 验证码临时表 (用于校验手机号)
 model VerificationCode {
   id        String   @id @default(cuid())
   phone     String
-  code      String   // 例如 "123456"
-  type      String   // "REGISTER", "LOGIN", "RESET_PWD"
-  expiresAt DateTime // 过期时间 (通常5分钟)
+  code      String
+  type      String
+  expiresAt DateTime
   createdAt DateTime @default(now())
 
   @@index([phone, type])
-  @@map("verification_codes")
 }
 
 model Comment {
   id        String   @id @default(cuid())
-  content   String   @db.Text // MySQL text类型
-  isDeleted Boolean  @default(false) // 软删除标记
+  content   String   @db.Text
+  isDeleted Boolean  @default(false)
   createdAt DateTime @default(now())
   
   authorId  String
-  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id])
   
   parentId  String?
   parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id])
   children  Comment[] @relation("CommentReplies")
   
-  rootId    String?  // 顶层楼ID，用于通知聚合
-
-  @@map("comments")
+  rootId    String?
 }
 
 model Notification {
   id        String   @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
   content   String
   isRead    Boolean  @default(false)
   link      String?
+  type      String?  // 'reply' | 'mention' | etc.
+  relatedId String?  // 关联的回复ID或帖子ID
   createdAt DateTime @default(now())
-
+  
   @@index([userId, isRead])
-  @@map("notifications")
+}
+
+model MessageBoardPost {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  
+  replies   MessageBoardReply[]
+  
+  @@index([authorId])
+  @@index([createdAt])
+}
+
+model MessageBoardReply {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  
+  postId    String
+  post      MessageBoardPost @relation(fields: [postId], references: [id])
+  
+  parentId  String?
+  parent    MessageBoardReply? @relation("ReplyReplies", fields: [parentId], references: [id])
+  children  MessageBoardReply[] @relation("ReplyReplies")
+  
+  @@index([postId])
+  @@index([authorId])
+  @@index([parentId])
+  @@index([createdAt])
 }

@@ -19,9 +19,16 @@ interface FooterConfig {
 
 export default async function Footer() {
   // 从 Strapi 后台获取页脚配置（包括微信二维码）
-  const footerConfig = await fetchAPI("/global", { 
-    populate: "*"
-  }) as FooterConfig | null;
+  // 使用 try-catch 处理 API 错误，避免页面崩溃
+  let footerConfig: FooterConfig | null = null;
+  try {
+    footerConfig = await fetchAPI("/global", { 
+      populate: "*"
+    }) as FooterConfig | null;
+  } catch (error) {
+    console.error('获取 Footer 配置失败:', error);
+    // 如果 API 失败，footerConfig 保持为 null，使用默认值
+  }
   
   // 获取原始 URL
   const rawUrl = footerConfig?.WechatQRCode?.url || null;
