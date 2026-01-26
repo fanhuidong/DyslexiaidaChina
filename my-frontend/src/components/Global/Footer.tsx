@@ -36,10 +36,10 @@ export default async function Footer() {
 
   // 调试信息（服务器端和客户端都输出）
   // 服务器端日志（在 Vercel 日志中可见）
-  console.log("🔍 [Footer Server] 原始 URL:", rawUrl);
-  console.log("🔍 [Footer Server] 处理后的 URL:", qrCodeUrl);
-  console.log("🔍 [Footer Server] 完整配置:", JSON.stringify(footerConfig?.WechatQRCode, null, 2));
-  console.log("🔍 [Footer Server] 环境:", process.env.NODE_ENV);
+  // console.log("🔍 [Footer Server] 原始 URL:", rawUrl);
+  // console.log("🔍 [Footer Server] 处理后的 URL:", qrCodeUrl);
+  // console.log("🔍 [Footer Server] 完整配置:", JSON.stringify(footerConfig?.WechatQRCode, null, 2));
+  // console.log("🔍 [Footer Server] 环境:", process.env.NODE_ENV);
 
   return (
     <footer className="text-white pt-16 pb-10 mt-12" style={{ backgroundColor: '#002938' }}>

@@ -16,7 +16,7 @@ import { hashPassword } from '@/lib/auth-utils';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { username, phone, password, verificationCode } = body;
+    const { username, phone, password } = body;
 
     // 验证必填字段
     if (!username || !phone || !password) {
@@ -65,30 +65,6 @@ export async function POST(request: NextRequest) {
         { error: '密码长度至少为6位' },
         { status: 400 }
       );
-    }
-
-    // 如果提供了验证码，验证验证码
-    if (verificationCode) {
-      const codeRecord = await db.verificationCode.findFirst({
-        where: {
-          phone: phone,
-          code: verificationCode,
-          type: 'REGISTER',
-          expiresAt: {
-            gt: new Date(), // 未过期
-          },
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
-
-      if (!codeRecord) {
-        return NextResponse.json(
-          { error: '验证码无效或已过期' },
-          { status: 400 }
-        );
-      }
     }
 
     // 检查手机号是否已存在

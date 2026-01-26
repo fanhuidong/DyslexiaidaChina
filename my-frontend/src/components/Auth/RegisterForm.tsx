@@ -3,80 +3,17 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Loader2, Phone, Lock, Shield, User } from 'lucide-react';
+import { Loader2, Phone, Lock, User } from 'lucide-react';
 
 export default function RegisterForm() {
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [phone, setPhone] = useState('');
-  const [verificationCode, setVerificationCode] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isSendingCode, setIsSendingCode] = useState(false);
-  const [codeSent, setCodeSent] = useState(false);
-  const [countdown, setCountdown] = useState(0);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [devCode, setDevCode] = useState(''); // 开发模式下显示的验证码
-
-  // 发送验证码
-  const handleSendCode = async () => {
-    if (!phone || !/^1[3-9]\d{9}$/.test(phone)) {
-      setError('请先输入正确的手机号');
-      return;
-    }
-
-    setIsSendingCode(true);
-    setError('');
-    setSuccess('');
-
-    try {
-      const response = await fetch('/api/auth/send-code', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phone,
-          type: 'REGISTER',
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || '验证码发送失败，请稍后重试');
-        return;
-      }
-
-      setCodeSent(true);
-      // 开发模式下显示验证码
-      if (data.code) {
-        setDevCode(data.code);
-        setSuccess(`验证码已发送！开发模式验证码: ${data.code}`);
-      } else {
-        setSuccess('验证码已发送，请查看手机短信');
-      }
-      setCountdown(60); // 60秒倒计时
-
-      // 倒计时
-      const timer = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } catch (err) {
-      setError('验证码发送失败，请检查网络连接后重试');
-      console.error('发送验证码错误:', err);
-    } finally {
-      setIsSendingCode(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,12 +43,6 @@ export default function RegisterForm() {
       return;
     }
 
-    // 验证验证码
-    if (!verificationCode || verificationCode.length !== 6) {
-      setError('请输入6位验证码');
-      return;
-    }
-
     // 验证密码长度
     if (password.length < 6) {
       setError('密码长度至少为6位');
@@ -137,7 +68,6 @@ export default function RegisterForm() {
           username: username.trim(),
           phone,
           password,
-          verificationCode,
         }),
       });
 
@@ -215,7 +145,7 @@ export default function RegisterForm() {
       {/* 手机号输入框 */}
       <div>
         <label htmlFor="phone" className="block text-sm font-semibold text-text-primary mb-2">
-          手机号
+          手机号 <span className="text-red-500">*</span>
         </label>
         <div className="relative">
           <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-muted w-5 h-5" />
@@ -226,7 +156,6 @@ export default function RegisterForm() {
             onChange={(e) => {
               const value = e.target.value.replace(/\D/g, '').slice(0, 11);
               setPhone(value);
-              setCodeSent(false); // 手机号改变时重置验证码状态
               setError('');
             }}
             required
@@ -241,62 +170,10 @@ export default function RegisterForm() {
         )}
       </div>
 
-      {/* 验证码输入框 */}
-      <div>
-        <label htmlFor="verificationCode" className="block text-sm font-semibold text-text-primary mb-2">
-          验证码
-        </label>
-        <div className="flex gap-2">
-          <div className="relative flex-1">
-            <Shield className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-muted w-5 h-5" />
-            <input
-              id="verificationCode"
-              type="text"
-              value={verificationCode}
-              onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              required
-              disabled={isLoading}
-              maxLength={6}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all bg-white text-text-primary disabled:bg-gray-50 disabled:cursor-not-allowed"
-              placeholder="请输入6位验证码"
-            />
-          </div>
-          <button
-            type="button"
-            onClick={handleSendCode}
-            disabled={isSendingCode || countdown > 0 || isLoading || !phone || !/^1[3-9]\d{9}$/.test(phone)}
-            className="px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-          >
-            {isSendingCode ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : countdown > 0 ? (
-              `${countdown}秒`
-            ) : (
-              '发送验证码'
-            )}
-          </button>
-        </div>
-        {codeSent && (
-          <div className="mt-1">
-            {devCode ? (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <p className="text-xs text-blue-800 font-semibold mb-1">📱 开发模式验证码：</p>
-                <p className="text-lg text-blue-900 font-mono font-bold text-center">{devCode}</p>
-                <p className="text-xs text-blue-600 mt-1 text-center">（此验证码仅在开发模式下显示）</p>
-              </div>
-            ) : (
-              <p className="text-xs text-green-600">
-                验证码已发送，请查看手机短信
-              </p>
-            )}
-          </div>
-        )}
-      </div>
-
       {/* 密码输入框 */}
       <div>
         <label htmlFor="password" className="block text-sm font-semibold text-text-primary mb-2">
-          密码
+          密码 <span className="text-red-500">*</span>
         </label>
         <div className="relative">
           <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-muted w-5 h-5" />
@@ -325,7 +202,7 @@ export default function RegisterForm() {
       {/* 确认密码输入框 */}
       <div>
         <label htmlFor="confirmPassword" className="block text-sm font-semibold text-text-primary mb-2">
-          确认密码
+          确认密码 <span className="text-red-500">*</span>
         </label>
         <div className="relative">
           <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-muted w-5 h-5" />
