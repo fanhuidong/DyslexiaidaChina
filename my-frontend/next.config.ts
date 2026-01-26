@@ -2,14 +2,7 @@
 // 核心环境变量：isDevelopment
 // true  = 开发版（本地前后端）
 // false = 生产版（线上前后端）
-const isDevelopment = process.env.NODE_ENV === "development";
-
-// 后端配置
-const API_URL = isDevelopment
-  ? process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:8888"
-  : process.env.NEXT_PUBLIC_STRAPI_URL || "http://43.135.124.98:1337";
-const BACKEND_HOSTNAME = isDevelopment ? "localhost" : "43.135.124.98";
-const BACKEND_PORT = isDevelopment ? "8888" : "1337";
+import { API_URL, BACKEND_HOSTNAME, BACKEND_PORT, isDevelopment } from "./src/config/env";
 
 const nextConfig = {
   // 1. 🖼️ 图片通行证：允许 Next.js 优化图片
@@ -29,8 +22,9 @@ const nextConfig = {
         pathname: '/**', // 允许所有路径
       },
     ],
-    // 开发环境禁用图片优化，避免问题
-    unoptimized: isDevelopment,
+    // 生产环境也禁用图片优化，因为使用相对路径通过代理加载
+    // 这样可以避免 Next.js Image 优化器尝试处理相对路径时的问题
+    unoptimized: true,
     // 允许加载未优化的图片
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',

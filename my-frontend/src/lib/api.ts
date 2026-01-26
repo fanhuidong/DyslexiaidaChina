@@ -44,7 +44,7 @@ export function getStrapiMedia(url: string | null | undefined) {
              urlObj.hostname === "localhost" || 
              urlObj.hostname.includes("43.135.124.98"))) {
           const relativePath = urlObj.pathname + urlObj.search;
-          console.log(`🖼️ [getStrapiMedia] 生产环境转换: ${url} -> ${relativePath}`);
+          console.log(`🖼️ [getStrapiMedia] 生产环境转换 HTTP: ${url} -> ${relativePath}`);
           return relativePath;
         }
         // 如果是 HTTPS URL，直接返回（不需要转换）
@@ -72,6 +72,7 @@ export function getStrapiMedia(url: string | null | undefined) {
       // 提取路径部分
       const pathMatch = url.match(/\/\/[^\/]+(\/.*)/);
       if (pathMatch) {
+        console.log(`🖼️ [getStrapiMedia] 生产环境转换协议相对: ${url} -> ${pathMatch[1]}`);
         return pathMatch[1];
       }
     }
@@ -88,15 +89,17 @@ export function getStrapiMedia(url: string | null | undefined) {
   // 确保相对路径以 / 开头
   const normalizedPath = url.startsWith("/") ? url : `/${url}`;
   
-  // 图片也走上面的智能逻辑：
-  // 开发环境：服务器端和客户端都使用绝对路径
-  // 生产环境：服务器端使用绝对路径，客户端使用相对路径(走代理)
-  const finalUrl = getStrapiURL(normalizedPath);
-  
-  // 开发环境添加调试日志
-  if (isDevelopment) {
-    console.log(`🖼️ [getStrapiMedia] 原始URL: "${url}" -> 规范化: "${normalizedPath}" -> 最终URL: "${finalUrl}"`);
+  // 关键修复：在生产环境下，无论服务器端还是客户端，都返回相对路径
+  // 这样客户端可以通过 Next.js 代理加载图片，避免 Mixed Content 错误
+  if (!isDevelopment) {
+    // 生产环境：始终返回相对路径，走代理
+    console.log(`🖼️ [getStrapiMedia] 生产环境相对路径: "${url}" -> "${normalizedPath}"`);
+    return normalizedPath;
   }
+  
+  // 开发环境：使用绝对路径
+  const finalUrl = getStrapiURL(normalizedPath);
+  console.log(`🖼️ [getStrapiMedia] 开发环境: "${url}" -> "${normalizedPath}" -> "${finalUrl}"`);
   
   return finalUrl;
 }
