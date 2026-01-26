@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { fetchAPI, getStrapiMedia } from '@/lib/api';
 import { isDevelopment } from '@/config/env';
+import FooterDebug from './FooterDebug';
 
 // 强制动态渲染，避免缓存问题
 export const dynamic = 'force-dynamic';
@@ -26,14 +27,21 @@ export default async function Footer() {
   const rawUrl = footerConfig?.WechatQRCode?.url || null;
   const qrCodeUrl = getStrapiMedia(rawUrl);
 
-  // 调试信息（生产环境也输出，方便排查）
-  console.log("🔍 [Footer] 原始 URL:", rawUrl);
-  console.log("🔍 [Footer] 处理后的 URL:", qrCodeUrl);
-  console.log("🔍 [Footer] 完整配置:", JSON.stringify(footerConfig?.WechatQRCode, null, 2));
-  console.log("🔍 [Footer] 环境:", process.env.NODE_ENV);
+  // 调试信息（服务器端和客户端都输出）
+  // 服务器端日志（在 Vercel 日志中可见）
+  console.log("🔍 [Footer Server] 原始 URL:", rawUrl);
+  console.log("🔍 [Footer Server] 处理后的 URL:", qrCodeUrl);
+  console.log("🔍 [Footer Server] 完整配置:", JSON.stringify(footerConfig?.WechatQRCode, null, 2));
+  console.log("🔍 [Footer Server] 环境:", process.env.NODE_ENV);
 
   return (
     <footer className="text-white pt-16 pb-10 mt-12" style={{ backgroundColor: '#002938' }}>
+      {/* 客户端调试组件（在浏览器控制台输出） */}
+      <FooterDebug 
+        rawUrl={rawUrl} 
+        qrCodeUrl={qrCodeUrl} 
+        config={footerConfig?.WechatQRCode} 
+      />
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* Logo 与描述 */}
