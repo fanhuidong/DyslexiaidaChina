@@ -15,6 +15,8 @@ export default function Header() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [userMenuWidth, setUserMenuWidth] = useState<number | undefined>(undefined);
   const userButtonRef = useRef<HTMLButtonElement>(null);
+  const resourcesMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const aboutMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const pathname = usePathname();
   const { data: session, status } = useSession();
 
@@ -55,6 +57,64 @@ export default function Header() {
     setIsAboutMenuOpen(false);
   };
 
+  // 处理资源探索菜单的鼠标进入
+  const handleResourcesMouseEnter = () => {
+    // 清除自己的关闭定时器
+    if (resourcesMenuTimeoutRef.current) {
+      clearTimeout(resourcesMenuTimeoutRef.current);
+      resourcesMenuTimeoutRef.current = null;
+    }
+    // 立即关闭另一个菜单并清除其定时器
+    if (aboutMenuTimeoutRef.current) {
+      clearTimeout(aboutMenuTimeoutRef.current);
+      aboutMenuTimeoutRef.current = null;
+    }
+    setIsAboutMenuOpen(false);
+    setIsResourcesMenuOpen(true);
+  };
+
+  // 处理资源探索菜单的鼠标离开（延迟关闭）
+  const handleResourcesMouseLeave = () => {
+    resourcesMenuTimeoutRef.current = setTimeout(() => {
+      setIsResourcesMenuOpen(false);
+    }, 150); // 150ms 延迟，给用户时间移动到下拉菜单
+  };
+
+  // 处理关于我们菜单的鼠标进入
+  const handleAboutMouseEnter = () => {
+    // 清除自己的关闭定时器
+    if (aboutMenuTimeoutRef.current) {
+      clearTimeout(aboutMenuTimeoutRef.current);
+      aboutMenuTimeoutRef.current = null;
+    }
+    // 立即关闭另一个菜单并清除其定时器
+    if (resourcesMenuTimeoutRef.current) {
+      clearTimeout(resourcesMenuTimeoutRef.current);
+      resourcesMenuTimeoutRef.current = null;
+    }
+    setIsResourcesMenuOpen(false);
+    setIsAboutMenuOpen(true);
+  };
+
+  // 处理关于我们菜单的鼠标离开（延迟关闭）
+  const handleAboutMouseLeave = () => {
+    aboutMenuTimeoutRef.current = setTimeout(() => {
+      setIsAboutMenuOpen(false);
+    }, 150); // 150ms 延迟，给用户时间移动到下拉菜单
+  };
+
+  // 清理定时器
+  useEffect(() => {
+    return () => {
+      if (resourcesMenuTimeoutRef.current) {
+        clearTimeout(resourcesMenuTimeoutRef.current);
+      }
+      if (aboutMenuTimeoutRef.current) {
+        clearTimeout(aboutMenuTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <header className={`sticky top-0 z-50 w-full transition-all duration-300 font-sans ${isScrolled ? 'shadow-xl' : ''}`}>
       
@@ -77,19 +137,20 @@ export default function Header() {
             {/* 👇 "资源探索" 下拉菜单 - 全屏宽度面板 */}
             <div 
               className="h-full flex items-center relative"
-              onMouseEnter={() => setIsResourcesMenuOpen(true)}
-              onMouseLeave={() => setIsResourcesMenuOpen(false)}
+              onMouseEnter={handleResourcesMouseEnter}
+              onMouseLeave={handleResourcesMouseLeave}
             >
               <button className="h-full flex items-center px-4 text-[15px] font-bold text-gray-700 hover:text-[#5c4ae3] transition-colors focus:outline-none">
                 资源探索 <ChevronDown className="w-4 h-4 ml-1 opacity-50" />
               </button>
               
               {/* Mega Menu：横跨整个屏幕宽度的面板 - 美化设计 */}
-              <div className={`fixed top-24 left-0 w-screen bg-gradient-to-b from-white to-off-white shadow-2xl border-t-4 border-primary transition-all duration-300 transform z-40 ${
-                isResourcesMenuOpen 
-                  ? 'opacity-100 visible translate-y-0' 
-                  : 'opacity-0 invisible translate-y-2'
-              }`}>
+              {isResourcesMenuOpen && (
+                <div 
+                  className="fixed top-24 left-0 w-screen bg-gradient-to-b from-white to-off-white shadow-2xl border-t-4 border-primary transition-all duration-300 transform z-40 opacity-100 visible translate-y-0"
+                  onMouseEnter={handleResourcesMouseEnter}
+                  onMouseLeave={handleResourcesMouseLeave}
+                >
                 <div className="container mx-auto px-12 py-20 max-w-7xl">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-20">
                     {/* 关于阅读障碍 */}
@@ -135,25 +196,27 @@ export default function Header() {
                     </div>
                   </div>
                 </div>
-              </div>
+                </div>
+              )}
             </div>
 
             {/* 👇 "关于我们" 下拉菜单 - 全屏宽度面板 */}
             <div 
               className="h-full flex items-center relative"
-              onMouseEnter={() => setIsAboutMenuOpen(true)}
-              onMouseLeave={() => setIsAboutMenuOpen(false)}
+              onMouseEnter={handleAboutMouseEnter}
+              onMouseLeave={handleAboutMouseLeave}
             >
               <button className="h-full flex items-center px-4 text-[15px] font-bold text-gray-700 hover:text-[#5c4ae3] transition-colors focus:outline-none">
                 关于我们 <ChevronDown className="w-4 h-4 ml-1 opacity-50" />
               </button>
               
               {/* Mega Menu：横跨整个屏幕宽度的面板 - 美化设计 */}
-              <div className={`fixed top-24 left-0 w-screen bg-gradient-to-b from-white to-off-white shadow-2xl border-t-4 border-primary transition-all duration-300 transform z-40 ${
-                isAboutMenuOpen 
-                  ? 'opacity-100 visible translate-y-0' 
-                  : 'opacity-0 invisible translate-y-2'
-              }`}>
+              {isAboutMenuOpen && (
+                <div 
+                  className="fixed top-24 left-0 w-screen bg-gradient-to-b from-white to-off-white shadow-2xl border-t-4 border-primary transition-all duration-300 transform z-40 opacity-100 visible translate-y-0"
+                  onMouseEnter={handleAboutMouseEnter}
+                  onMouseLeave={handleAboutMouseLeave}
+                >
                 <div className="container mx-auto px-12 py-20 max-w-7xl">
                   <div className="mb-12">
                     <h3 className="text-3xl font-black text-navy tracking-tight flex items-center gap-3">
@@ -170,7 +233,8 @@ export default function Header() {
                     <DropdownCard href="/about/partners" title="我们的伙伴" description="合作伙伴网络" onClick={closeDesktopMenus} />
                   </div>
                 </div>
-              </div>
+                </div>
+              )}
             </div>
 
             {/* 留言板按钮 */}
