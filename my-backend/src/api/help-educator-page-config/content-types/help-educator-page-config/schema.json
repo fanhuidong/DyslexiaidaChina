@@ -1,0 +1,28 @@
+{
+  "kind": "singleType",
+  "collectionName": "help_educator_page_configs",
+  "info": {
+    "singularName": "help-educator-page-config",
+    "pluralName": "help-educator-page-configs",
+    "displayName": "HelpEducatorPageConfig"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "Image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "Description": {
+      "type": "text"
+    }
+  }
+}

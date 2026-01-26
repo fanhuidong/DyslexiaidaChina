@@ -82,3 +82,38 @@ export interface SuccessStory {
   Photo: StrapiMedia | null; // 头像
   StoryContent?: any; // 富文本内容 (可选，列表页可能不返回)
 }
+
+// 4. Help Video (帮助视频) 类型定义
+export interface HelpVideo {
+  id: number;
+  documentId: string;
+  Title: string;
+  Description?: string;
+  Image?: {
+    url: string;
+    alternativeText?: string;
+  };
+  VideoUrl: string;
+  Category: 'Adult' | 'Teenager' | 'Educator';
+  publishedAt?: string;
+}
+
+// 5. Help Article (帮助博客) 类型定义
+export interface HelpArticle {
+  id: number;
+  documentId: string;
+  Title: string;
+  Description?: string;
+  Content?: any;
+  Slug: string;
+  Cover?: {
+    url: string;
+    alternativeText?: string;
+    width?: number;
+    height?: number;
+  };
+  Category: 'Adult' | 'Teenager' | 'Educator';
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}

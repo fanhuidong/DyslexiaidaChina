@@ -176,9 +176,9 @@ export default function Header() {
                         寻找帮助
                       </div>
                       <div className="flex flex-col space-y-3">
-                        <DropdownLink href="/category/adult" onClick={closeDesktopMenus}>成人</DropdownLink>
-                        <DropdownLink href="/category/teen" onClick={closeDesktopMenus}>青少年</DropdownLink>
-                        <DropdownLink href="/category/educator" onClick={closeDesktopMenus}>教育者</DropdownLink>
+                        <DropdownLink href="/help/adult" onClick={closeDesktopMenus}>成人</DropdownLink>
+                        <DropdownLink href="/help/teenager" onClick={closeDesktopMenus}>青少年</DropdownLink>
+                        <DropdownLink href="/help/educator" onClick={closeDesktopMenus}>教育者</DropdownLink>
                       </div>
                     </div>
 

@@ -457,6 +457,35 @@ export interface ApiAboutAbout extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiAccessibilityStatementAccessibilityStatement
+  extends Struct.SingleTypeSchema {
+  collectionName: 'accessibility_statements';
+  info: {
+    displayName: 'Accessibility Statement';
+    pluralName: 'accessibility-statements';
+    singularName: 'accessibility-statement';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Content: Schema.Attribute.Blocks;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::accessibility-statement.accessibility-statement'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
   collectionName: 'articles';
   info: {
@@ -828,6 +857,166 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiHelpAdultPageConfigHelpAdultPageConfig
+  extends Struct.SingleTypeSchema {
+  collectionName: 'help_adult_page_configs';
+  info: {
+    displayName: 'HelpAdultPageConfig';
+    pluralName: 'help-adult-page-configs';
+    singularName: 'help-adult-page-config';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description: Schema.Attribute.Text;
+    Image: Schema.Attribute.Media<'images'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::help-adult-page-config.help-adult-page-config'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    Title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiHelpArticleHelpArticle extends Struct.CollectionTypeSchema {
+  collectionName: 'help_articles';
+  info: {
+    displayName: 'HelpArticle';
+    pluralName: 'help-articles';
+    singularName: 'help-article';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Category: Schema.Attribute.Enumeration<['Adult', 'Teenager', 'Educator']> &
+      Schema.Attribute.Required;
+    Content: Schema.Attribute.Blocks;
+    Cover: Schema.Attribute.Media<'images'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description: Schema.Attribute.Text;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::help-article.help-article'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    Slug: Schema.Attribute.UID<'Title'>;
+    Title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiHelpEducatorPageConfigHelpEducatorPageConfig
+  extends Struct.SingleTypeSchema {
+  collectionName: 'help_educator_page_configs';
+  info: {
+    displayName: 'HelpEducatorPageConfig';
+    pluralName: 'help-educator-page-configs';
+    singularName: 'help-educator-page-config';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description: Schema.Attribute.Text;
+    Image: Schema.Attribute.Media<'images'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::help-educator-page-config.help-educator-page-config'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    Title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiHelpTeenagerPageConfigHelpTeenagerPageConfig
+  extends Struct.SingleTypeSchema {
+  collectionName: 'help_teenager_page_configs';
+  info: {
+    displayName: 'HelpTeenagerPageConfig';
+    pluralName: 'help-teenager-page-configs';
+    singularName: 'help-teenager-page-config';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description: Schema.Attribute.Text;
+    Image: Schema.Attribute.Media<'images'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::help-teenager-page-config.help-teenager-page-config'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    Title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiHelpVideoHelpVideo extends Struct.CollectionTypeSchema {
+  collectionName: 'help_videos';
+  info: {
+    displayName: 'HelpVideo';
+    pluralName: 'help-videos';
+    singularName: 'help-video';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Category: Schema.Attribute.Enumeration<['Adult', 'Teenager', 'Educator']> &
+      Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description: Schema.Attribute.Text;
+    Image: Schema.Attribute.Media<'images'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::help-video.help-video'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    Title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    VideoUrl: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface ApiHeroSlideHeroSlide extends Struct.CollectionTypeSchema {
   collectionName: 'hero_slides';
   info: {
@@ -1012,6 +1201,34 @@ export interface ApiPartnerPartner extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiPrivacyPolicyPrivacyPolicy extends Struct.SingleTypeSchema {
+  collectionName: 'privacy_policies';
+  info: {
+    displayName: 'Privacy Policy';
+    pluralName: 'privacy-policies';
+    singularName: 'privacy-policy';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Content: Schema.Attribute.Blocks;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::privacy-policy.privacy-policy'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiStoryStory extends Struct.SingleTypeSchema {
   collectionName: 'stories';
   info: {
@@ -1193,6 +1410,35 @@ export interface ApiTeamPageConfigTeamPageConfig
     publishedAt: Schema.Attribute.DateTime;
     Subtitle: Schema.Attribute.String;
     Title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiTermsOfServiceTermsOfService
+  extends Struct.SingleTypeSchema {
+  collectionName: 'terms_of_services';
+  info: {
+    displayName: 'Terms Of Service';
+    pluralName: 'terms-of-services';
+    singularName: 'terms-of-service';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Content: Schema.Attribute.Blocks;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::terms-of-service.terms-of-service'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1739,6 +1985,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::about.about': ApiAboutAbout;
+      'api::accessibility-statement.accessibility-statement': ApiAccessibilityStatementAccessibilityStatement;
       'api::article.article': ApiArticleArticle;
       'api::category.category': ApiCategoryCategory;
       'api::contact.contact': ApiContactContact;
@@ -1751,18 +1998,25 @@ declare module '@strapi/strapi' {
       'api::faq.faq': ApiFaqFaq;
       'api::forum.forum': ApiForumForum;
       'api::global.global': ApiGlobalGlobal;
+      'api::help-adult-page-config.help-adult-page-config': ApiHelpAdultPageConfigHelpAdultPageConfig;
+      'api::help-article.help-article': ApiHelpArticleHelpArticle;
+      'api::help-educator-page-config.help-educator-page-config': ApiHelpEducatorPageConfigHelpEducatorPageConfig;
+      'api::help-teenager-page-config.help-teenager-page-config': ApiHelpTeenagerPageConfigHelpTeenagerPageConfig;
+      'api::help-video.help-video': ApiHelpVideoHelpVideo;
       'api::hero-slide.hero-slide': ApiHeroSlideHeroSlide;
       'api::infographic-page-config.infographic-page-config': ApiInfographicPageConfigInfographicPageConfig;
       'api::infographic.infographic': ApiInfographicInfographic;
       'api::news-page-config.news-page-config': ApiNewsPageConfigNewsPageConfig;
       'api::partner-page-config.partner-page-config': ApiPartnerPageConfigPartnerPageConfig;
       'api::partner.partner': ApiPartnerPartner;
+      'api::privacy-policy.privacy-policy': ApiPrivacyPolicyPrivacyPolicy;
       'api::story.story': ApiStoryStory;
       'api::structured-literacy-campaign.structured-literacy-campaign': ApiStructuredLiteracyCampaignStructuredLiteracyCampaign;
       'api::success-story-page-config.success-story-page-config': ApiSuccessStoryPageConfigSuccessStoryPageConfig;
       'api::success-story.success-story': ApiSuccessStorySuccessStory;
       'api::team-member.team-member': ApiTeamMemberTeamMember;
       'api::team-page-config.team-page-config': ApiTeamPageConfigTeamPageConfig;
+      'api::terms-of-service.terms-of-service': ApiTermsOfServiceTermsOfService;
       'api::vision.vision': ApiVisionVision;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

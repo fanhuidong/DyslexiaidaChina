@@ -138,7 +138,7 @@ export default async function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex flex-wrap justify-center gap-6 text-sm">
               <Link 
-                href="#" 
+                href="/privacy-policy" 
                 className="text-gray-500 hover:text-white transition-colors duration-300 relative group"
               >
                 隐私政策
@@ -146,7 +146,7 @@ export default async function Footer() {
               </Link>
               <span className="text-gray-600">·</span>
               <Link 
-                href="#" 
+                href="/terms-of-service" 
                 className="text-gray-500 hover:text-white transition-colors duration-300 relative group"
               >
                 使用条款
@@ -154,7 +154,7 @@ export default async function Footer() {
               </Link>
               <span className="text-gray-600">·</span>
               <Link 
-                href="#" 
+                href="/accessibility-statement" 
                 className="text-gray-500 hover:text-white transition-colors duration-300 relative group"
               >
                 无障碍声明

@@ -1,0 +1,28 @@
+{
+  "kind": "singleType",
+  "collectionName": "help_teenager_page_configs",
+  "info": {
+    "singularName": "help-teenager-page-config",
+    "pluralName": "help-teenager-page-configs",
+    "displayName": "HelpTeenagerPageConfig"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "Image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "Description": {
+      "type": "text"
+    }
+  }
+}
