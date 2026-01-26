@@ -31,23 +31,22 @@ export function getStrapiMedia(url: string | null | undefined) {
   
   // 如果已经是完整 URL（http/https），需要特殊处理
   if (url.startsWith("http://") || url.startsWith("https://")) {
-    // 在生产环境的客户端，将完整 URL 转换为相对路径，走代理
-    if (!isDevelopment && typeof window !== "undefined") {
+    // 在生产环境下，无论服务器端还是客户端，都转换为相对路径走代理
+    // 这样可以避免 Mixed Content 问题（HTTPS 页面加载 HTTP 资源）
+    if (!isDevelopment) {
       try {
         const urlObj = new URL(url);
         // 如果是后端服务器的 URL，提取路径部分走代理
-        if (urlObj.hostname === "43.135.124.98" || urlObj.hostname === "localhost") {
+        if (urlObj.hostname === "43.135.124.98" || urlObj.hostname === "localhost" || urlObj.hostname.includes("43.135.124.98")) {
           const relativePath = urlObj.pathname + urlObj.search;
-          if (isDevelopment) {
-            console.log(`🖼️ [getStrapiMedia] 完整URL转相对路径: ${url} -> ${relativePath}`);
-          }
           return relativePath;
         }
       } catch (e) {
-        // URL 解析失败，直接返回原 URL
+        // URL 解析失败，继续使用原逻辑
       }
     }
     
+    // 开发环境直接返回完整 URL
     if (isDevelopment) {
       console.log(`🖼️ [getStrapiMedia] 完整URL: ${url}`);
     }
@@ -56,8 +55,8 @@ export function getStrapiMedia(url: string | null | undefined) {
   
   // 如果是以 // 开头，补充协议
   if (url.startsWith("//")) {
-    // 在生产环境的客户端，转换为相对路径
-    if (!isDevelopment && typeof window !== "undefined") {
+    // 在生产环境下，转换为相对路径走代理
+    if (!isDevelopment) {
       // 提取路径部分
       const pathMatch = url.match(/\/\/[^\/]+(\/.*)/);
       if (pathMatch) {
@@ -65,7 +64,7 @@ export function getStrapiMedia(url: string | null | undefined) {
       }
     }
     
-    // 使用后端配置的协议
+    // 开发环境补充协议
     const protocol = isDevelopment ? "http" : "https";
     const finalUrl = `${protocol}:${url}`;
     if (isDevelopment) {
@@ -77,7 +76,9 @@ export function getStrapiMedia(url: string | null | undefined) {
   // 确保相对路径以 / 开头
   const normalizedPath = url.startsWith("/") ? url : `/${url}`;
   
-  // 图片也走上面的智能逻辑：服务器端拿绝对路径，客户端拿相对路径(走代理)
+  // 图片也走上面的智能逻辑：
+  // 开发环境：服务器端和客户端都使用绝对路径
+  // 生产环境：服务器端使用绝对路径，客户端使用相对路径(走代理)
   const finalUrl = getStrapiURL(normalizedPath);
   
   // 开发环境添加调试日志

@@ -40,12 +40,13 @@ const nextConfig = {
   // 2. 🔗 转发通行证 (代理)：
   // 开发环境：代理到本地后端
   // 生产环境：代理到远程服务器（解决 Mixed Content 问题）
-  // 注意：Next.js 会优先匹配自己的 API 路由，所以 /api/auth/* 不会被代理
+  // 注意：Next.js 会优先匹配文件系统中的 API 路由（如 /api/auth/*），
+  // 所以 /api/auth/* 不会被代理，只有不匹配的 API 路由才会走代理
   async rewrites() {
     return [
       {
         // 代理 Strapi API 请求
-        // NextAuth 路由 (/api/auth/*) 由 Next.js 自己的路由处理，不会被代理
+        // Next.js 会优先匹配自己的 API 路由，所以 /api/auth/* 不会被代理
         source: '/api/:path*',
         destination: `${API_URL}/api/:path*`,
       },
