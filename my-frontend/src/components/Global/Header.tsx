@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown, LogIn } from 'lucide-react';
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
 
   // 滚动监听
   useEffect(() => {
@@ -17,8 +19,18 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // 当路由改变时，关闭移动端菜单
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
   const toggleMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  // 关闭移动端菜单
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
   };
 
   return (
@@ -161,27 +173,27 @@ export default function Header() {
                 <div>
                   <div className="text-sm font-bold text-gray-900 mb-2">关于阅读障碍</div>
                   <div className="pl-2 flex flex-col space-y-2 text-sm font-medium text-gray-600">
-                    <Link href="/definition">阅读障碍是什么</Link>
-                    <Link href="/dyslexia-at-a-glance">早期迹象</Link>
-                    <Link href="/faq">阅读障碍的常见问题</Link>
-                    <Link href="/do-i-have-dyslexia">自我评估</Link>
+                    <Link href="/definition" onClick={closeMobileMenu}>阅读障碍是什么</Link>
+                    <Link href="/dyslexia-at-a-glance" onClick={closeMobileMenu}>早期迹象</Link>
+                    <Link href="/faq" onClick={closeMobileMenu}>阅读障碍的常见问题</Link>
+                    <Link href="/do-i-have-dyslexia" onClick={closeMobileMenu}>自我评估</Link>
                   </div>
                 </div>
                 {/* 寻找帮助 */}
                 <div>
                   <div className="text-sm font-bold text-gray-900 mb-2">寻找帮助</div>
                   <div className="pl-2 flex flex-col space-y-2 text-sm font-medium text-gray-600">
-                    <Link href="/category/adult">成人</Link>
-                    <Link href="/category/teen">青少年</Link>
-                    <Link href="/category/educator">教育者</Link>
+                    <Link href="/category/adult" onClick={closeMobileMenu}>成人</Link>
+                    <Link href="/category/teen" onClick={closeMobileMenu}>青少年</Link>
+                    <Link href="/category/educator" onClick={closeMobileMenu}>教育者</Link>
                   </div>
                 </div>
                 {/* 更多支持 */}
                 <div>
                   <div className="text-sm font-bold text-gray-900 mb-2">更多支持</div>
                   <div className="pl-2 flex flex-col space-y-2 text-sm font-medium text-gray-600">
-                    <Link href="/forum">国际论坛</Link>
-                    <Link href="/news">我们的动态</Link>
+                    <Link href="/forum" onClick={closeMobileMenu}>国际论坛</Link>
+                    <Link href="/news" onClick={closeMobileMenu}>我们的动态</Link>
                   </div>
                 </div>
               </div>
@@ -190,15 +202,15 @@ export default function Header() {
             <div className="py-3 border-b border-gray-50 bg-gray-50 -mx-4 px-4">
               <div className="text-[#5c4ae3] mb-2 px-2 font-bold">关于我们</div>
               <div className="pl-4 flex flex-col space-y-3 text-sm font-medium text-gray-600">
-                <Link href="/about/vision">我们的愿景</Link>
-                <Link href="/about/story">我们的故事</Link>
-                <Link href="/about/team">我们的团队</Link>
-                <Link href="/about/contact">联系我们</Link>
-                <Link href="/about/partners">我们的伙伴</Link>
+                <Link href="/about/vision" onClick={closeMobileMenu}>我们的愿景</Link>
+                <Link href="/about/story" onClick={closeMobileMenu}>我们的故事</Link>
+                <Link href="/about/team" onClick={closeMobileMenu}>我们的团队</Link>
+                <Link href="/about/contact" onClick={closeMobileMenu}>联系我们</Link>
+                <Link href="/about/partners" onClick={closeMobileMenu}>我们的伙伴</Link>
               </div>
             </div>
 
-            <Link href="/message-board" className="py-3 border-b border-gray-50">留言板</Link>
+            <Link href="/message-board" className="py-3 border-b border-gray-50" onClick={closeMobileMenu}>留言板</Link>
 
             {/* 登录按钮 - 移动端 */}
             <div className="mt-4 px-4 pb-4">

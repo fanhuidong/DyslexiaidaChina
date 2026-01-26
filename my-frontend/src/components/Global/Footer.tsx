@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { fetchAPI, getStrapiMedia } from '@/lib/api';
 import { isDevelopment } from '@/config/env';
 import FooterDebug from './FooterDebug';
+import FooterQRCode from './FooterQRCode';
 
 // 强制动态渲染，避免缓存问题
 export const dynamic = 'force-dynamic';
@@ -106,35 +106,11 @@ export default async function Footer() {
             <h3 className="text-lg font-bold mb-5 text-white">联系我们</h3>
             <p className="text-gray-300 text-sm mb-4">微信群二维码</p>
             <div className="relative w-28 h-28 bg-white rounded-lg p-2 flex items-center justify-center shadow-md">
-              {qrCodeUrl ? (
-                <div className="relative w-full h-full">
-                  <Image
-                    src={qrCodeUrl}
-                    alt={footerConfig?.WechatQRCode?.alternativeText || "微信群二维码"}
-                    fill
-                    className="object-contain"
-                    unoptimized={process.env.NODE_ENV === "development"}
-                    priority
-                    sizes="112px"
-                    onError={(e) => {
-                      // 图片加载失败时的处理
-                      console.error("❌ [Footer] 二维码图片加载失败");
-                      console.error("❌ [Footer] 图片 URL:", qrCodeUrl);
-                      console.error("❌ [Footer] 原始 URL:", rawUrl);
-                      console.error("❌ [Footer] 环境:", process.env.NODE_ENV);
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                    }}
-                    onLoad={() => {
-                      console.log("✅ [Footer] 二维码图片加载成功:", qrCodeUrl);
-                    }}
-                  />
-                </div>
-              ) : (
-                <div className="text-gray-400 text-xs text-center p-2 leading-relaxed">
-                  请在 Strapi 后台<br/>上传二维码
-                </div>
-              )}
+              <FooterQRCode 
+                qrCodeUrl={qrCodeUrl}
+                alt={footerConfig?.WechatQRCode?.alternativeText || "微信群二维码"}
+                rawUrl={rawUrl}
+              />
             </div>
           </div>
         </div>
