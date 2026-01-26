@@ -105,7 +105,18 @@ export async function POST(
             avatar: true,
           },
         },
-        children: [],
+        children: {
+          where: { isDeleted: false },
+          include: {
+            author: {
+              select: {
+                id: true,
+                nickname: true,
+                avatar: true,
+              },
+            },
+          },
+        },
       },
     });
 

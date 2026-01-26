@@ -14,12 +14,18 @@ if (process.env.NODE_ENV === 'development') {
   const existingPrisma = globalForPrisma.prisma;
   
   // 检查是否包含 messageBoardPost 模型
-  if (existingPrisma && !('messageBoardPost' in existingPrisma)) {
-    console.warn('⚠️  [Prisma] 检测到旧的 Prisma Client 实例，正在重新创建...');
-    // 断开旧连接
-    existingPrisma.$disconnect().catch(() => {});
-    // 清除全局缓存
-    globalForPrisma.prisma = undefined;
+  if (existingPrisma) {
+    const hasMessageBoardPost = 'messageBoardPost' in existingPrisma;
+    if (!hasMessageBoardPost) {
+      console.warn('⚠️  [Prisma] 检测到旧的 Prisma Client 实例，正在重新创建...');
+      // 断开旧连接（异步执行，不阻塞）
+      // 使用类型断言，因为我们已经知道 existingPrisma 是 PrismaClient
+      (existingPrisma as PrismaClient).$disconnect().catch(() => {
+        // 忽略断开连接错误
+      });
+      // 清除全局缓存
+      globalForPrisma.prisma = undefined;
+    }
   }
   
   db = globalForPrisma.prisma ?? new PrismaClient({

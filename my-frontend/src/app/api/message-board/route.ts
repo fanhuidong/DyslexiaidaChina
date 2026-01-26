@@ -178,7 +178,18 @@ export async function POST(request: NextRequest) {
             avatar: true,
           },
         },
-        replies: [],
+        replies: {
+          where: { isDeleted: false },
+          include: {
+            author: {
+              select: {
+                id: true,
+                nickname: true,
+                avatar: true,
+              },
+            },
+          },
+        },
       },
     });
 

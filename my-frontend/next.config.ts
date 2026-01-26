@@ -5,6 +5,11 @@
 import { API_URL, BACKEND_HOSTNAME, BACKEND_PORT, isDevelopment } from "./src/config/env";
 
 const nextConfig = {
+  // 0. TypeScript 配置：在构建时跳过类型检查（如果需要）
+  typescript: {
+    // 在生产构建时忽略 TypeScript 错误（可选，不推荐）
+    // ignoreBuildErrors: true,
+  },
   // 1. 🖼️ 图片通行证：允许 Next.js 优化图片
   images: {
     remotePatterns: [
