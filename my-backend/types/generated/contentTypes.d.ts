@@ -769,6 +769,33 @@ export interface ApiFaqFaq extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiForumForum extends Struct.SingleTypeSchema {
+  collectionName: 'forums';
+  info: {
+    displayName: 'Forum';
+    pluralName: 'forums';
+    singularName: 'forum';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Content: Schema.Attribute.Blocks;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::forum.forum'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    Subtitle: Schema.Attribute.String;
+    Title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
   collectionName: 'globals';
   info: {
@@ -886,6 +913,36 @@ export interface ApiInfographicInfographic extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    Title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiNewsPageConfigNewsPageConfig
+  extends Struct.SingleTypeSchema {
+  collectionName: 'news_page_configs';
+  info: {
+    displayName: 'NewsPageConfig';
+    pluralName: 'news-page-configs';
+    singularName: 'news-page-config';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::news-page-config.news-page-config'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    Subtitle: Schema.Attribute.String;
     Title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1692,10 +1749,12 @@ declare module '@strapi/strapi' {
       'api::fact-sheet-page-config.fact-sheet-page-config': ApiFactSheetPageConfigFactSheetPageConfig;
       'api::fact-sheet.fact-sheet': ApiFactSheetFactSheet;
       'api::faq.faq': ApiFaqFaq;
+      'api::forum.forum': ApiForumForum;
       'api::global.global': ApiGlobalGlobal;
       'api::hero-slide.hero-slide': ApiHeroSlideHeroSlide;
       'api::infographic-page-config.infographic-page-config': ApiInfographicPageConfigInfographicPageConfig;
       'api::infographic.infographic': ApiInfographicInfographic;
+      'api::news-page-config.news-page-config': ApiNewsPageConfigNewsPageConfig;
       'api::partner-page-config.partner-page-config': ApiPartnerPageConfigPartnerPageConfig;
       'api::partner.partner': ApiPartnerPartner;
       'api::story.story': ApiStoryStory;

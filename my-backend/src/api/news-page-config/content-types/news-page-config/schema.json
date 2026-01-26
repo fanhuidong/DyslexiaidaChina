@@ -1,0 +1,21 @@
+{
+  "kind": "singleType",
+  "collectionName": "news_page_configs",
+  "info": {
+    "singularName": "news-page-config",
+    "pluralName": "news-page-configs",
+    "displayName": "NewsPageConfig"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "Subtitle": {
+      "type": "string"
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import { fetchAPI } from "@/lib/api";
 import { Article } from "@/types";
+import Link from "next/link";
 // import Hero from "@/components/Home/Hero"; // 轮播图已屏蔽
 import Features from "@/components/Home/Features";
 import ArticleCard from "@/components/UI/ArticleCard";
@@ -9,7 +10,9 @@ export default async function Home() {
   // 使用 try-catch 处理 API 错误，避免页面崩溃
   let articles = null;
   try {
-    articles = await fetchAPI("/articles?sort=publishedAt:desc&pagination[limit]=6&populate=*");
+    const allArticles = await fetchAPI("/articles?sort=publishedAt:desc&pagination[limit]=3&populate=*");
+    // 确保只显示最新的3条
+    articles = allArticles ? allArticles.slice(0, 3) : null;
   } catch (error) {
     console.error('获取文章列表失败:', error);
     // 如果 API 失败，articles 保持为 null，页面会显示空状态
@@ -29,21 +32,24 @@ export default async function Home() {
       {/* ==================== 2. 功能入口区域 (Features) ==================== */}
       <Features />
 
-      {/* ==================== 3. 新闻列表区域 (Latest News) ==================== */}
+      {/* ==================== 3. 我们的动态区域 (Our Updates) ==================== */}
       <section className="container mx-auto px-4 py-section">
         
         {/* 标题栏 */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4 border-b border-gray-200 pb-4 max-w-5xl mx-auto">
           <div className="text-center md:text-left w-full md:w-auto">
             <h2 className="text-3xl md:text-4xl font-black text-secondary tracking-tight">
-              最新消息
+              我们的动态
             </h2>
             <div className="h-1.5 w-24 bg-primary mx-auto md:mx-0 mt-3 rounded-full"></div>
           </div>
           
-          <button className="hidden md:block text-sm font-bold text-secondary hover:text-primary uppercase tracking-widest transition-colors mb-2">
+          <Link 
+            href="/news"
+            className="hidden md:block text-sm font-bold text-secondary hover:text-primary uppercase tracking-widest transition-colors mb-2"
+          >
             全部  →
-          </button>
+          </Link>
         </div>
 
         {/* 新闻列表  列表容器：这里改成了竖向排列 (flex-col)，增加间距 */}
@@ -66,11 +72,14 @@ export default async function Home() {
           )}
         </div>
 
-        {/* 移动端显示的“查看更多”按钮 */}
+        {/* 移动端显示的"查看更多"按钮 */}
         <div className="mt-12 text-center md:hidden max-w-5xl mx-auto">
-            <button className="px-8 py-3 border-2 border-navy text-navy font-bold rounded-full hover:bg-navy hover:text-white hover:-translate-y-0.5 transition-all w-full focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2">
+            <Link 
+              href="/news"
+              className="block px-8 py-3 border-2 border-navy text-navy font-bold rounded-full hover:bg-navy hover:text-white hover:-translate-y-0.5 transition-all w-full focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 text-center"
+            >
                 VIEW ALL STORIES
-            </button>
+            </Link>
         </div>
       </section>
     </main>
