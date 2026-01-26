@@ -4,6 +4,10 @@
 import "dotenv/config";
 import { defineConfig, env } from "prisma/config";
 
+// 获取 DATABASE_URL，如果不存在则使用占位符（prisma generate 不需要真实数据库连接）
+// prisma generate 只需要 schema 文件，不需要真实的数据库连接
+const databaseUrl = process.env.DATABASE_URL || "mysql://placeholder:placeholder@localhost:3306/placeholder";
+
 export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
@@ -11,6 +15,7 @@ export default defineConfig({
   },
   engine: "classic",
   datasource: {
-    url: env("DATABASE_URL"),
+    // 直接使用变量，不使用 env() 函数，避免在缺少环境变量时抛出错误
+    url: databaseUrl,
   },
 });
