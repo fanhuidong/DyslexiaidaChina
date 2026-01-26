@@ -59,7 +59,14 @@ export default async function DoIHaveDyslexiaPage() {
         {/* 封面图 */}
         {imageUrl && (
           <div className="mb-12 relative w-full h-[300px] md:h-[400px] rounded-xl overflow-hidden shadow-lg">
-            <Image src={imageUrl} alt={pageData.Title} fill className="object-cover" priority />
+            <Image 
+              src={imageUrl} 
+              alt={pageData.Title} 
+              fill 
+              className="object-cover" 
+              priority 
+              unoptimized={process.env.NODE_ENV === "development"}
+            />
           </div>
         )}
 
