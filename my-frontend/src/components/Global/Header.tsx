@@ -8,6 +8,8 @@ import { Menu, X, ChevronDown, LogIn } from 'lucide-react';
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isResourcesMenuOpen, setIsResourcesMenuOpen] = useState(false);
+  const [isAboutMenuOpen, setIsAboutMenuOpen] = useState(false);
   const pathname = usePathname();
 
   // 滚动监听
@@ -33,6 +35,12 @@ export default function Header() {
     setIsMobileMenuOpen(false);
   };
 
+  // 关闭桌面端下拉菜单
+  const closeDesktopMenus = () => {
+    setIsResourcesMenuOpen(false);
+    setIsAboutMenuOpen(false);
+  };
+
   return (
     <header className={`sticky top-0 z-50 w-full transition-all duration-300 font-sans ${isScrolled ? 'shadow-xl' : ''}`}>
       
@@ -53,13 +61,21 @@ export default function Header() {
           {/* 桌面端菜单 (Desktop Menu) - 整体居中 */}
           <nav className="hidden lg:flex items-center space-x-1 h-full mx-auto">
             {/* 👇 "资源探索" 下拉菜单 - 全屏宽度面板 */}
-            <div className="group h-full flex items-center relative">
-              <button className="h-full flex items-center px-4 text-[15px] font-bold text-gray-700 group-hover:text-[#5c4ae3] transition-colors focus:outline-none">
+            <div 
+              className="h-full flex items-center relative"
+              onMouseEnter={() => setIsResourcesMenuOpen(true)}
+              onMouseLeave={() => setIsResourcesMenuOpen(false)}
+            >
+              <button className="h-full flex items-center px-4 text-[15px] font-bold text-gray-700 hover:text-[#5c4ae3] transition-colors focus:outline-none">
                 资源探索 <ChevronDown className="w-4 h-4 ml-1 opacity-50" />
               </button>
               
               {/* Mega Menu：横跨整个屏幕宽度的面板 - 美化设计 */}
-              <div className="fixed top-24 left-0 w-screen bg-gradient-to-b from-white to-off-white shadow-2xl border-t-4 border-primary opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-40">
+              <div className={`fixed top-24 left-0 w-screen bg-gradient-to-b from-white to-off-white shadow-2xl border-t-4 border-primary transition-all duration-300 transform z-40 ${
+                isResourcesMenuOpen 
+                  ? 'opacity-100 visible translate-y-0' 
+                  : 'opacity-0 invisible translate-y-2'
+              }`}>
                 <div className="container mx-auto px-12 py-20 max-w-7xl">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-20">
                     {/* 关于阅读障碍 */}
@@ -70,10 +86,10 @@ export default function Header() {
                         关于阅读障碍
                       </div>
                       <div className="flex flex-col space-y-3">
-                        <DropdownLink href="/definition">阅读障碍是什么</DropdownLink>
-                        <DropdownLink href="/dyslexia-at-a-glance">早期迹象</DropdownLink>
-                        <DropdownLink href="/faq">阅读障碍的常见问题</DropdownLink>
-                        <DropdownLink href="/do-i-have-dyslexia">自我评估</DropdownLink>
+                        <DropdownLink href="/definition" onClick={closeDesktopMenus}>阅读障碍是什么</DropdownLink>
+                        <DropdownLink href="/dyslexia-at-a-glance" onClick={closeDesktopMenus}>早期迹象</DropdownLink>
+                        <DropdownLink href="/faq" onClick={closeDesktopMenus}>阅读障碍的常见问题</DropdownLink>
+                        <DropdownLink href="/do-i-have-dyslexia" onClick={closeDesktopMenus}>自我评估</DropdownLink>
                       </div>
                     </div>
 
@@ -85,9 +101,9 @@ export default function Header() {
                         寻找帮助
                       </div>
                       <div className="flex flex-col space-y-3">
-                        <DropdownLink href="/category/adult">成人</DropdownLink>
-                        <DropdownLink href="/category/teen">青少年</DropdownLink>
-                        <DropdownLink href="/category/educator">教育者</DropdownLink>
+                        <DropdownLink href="/category/adult" onClick={closeDesktopMenus}>成人</DropdownLink>
+                        <DropdownLink href="/category/teen" onClick={closeDesktopMenus}>青少年</DropdownLink>
+                        <DropdownLink href="/category/educator" onClick={closeDesktopMenus}>教育者</DropdownLink>
                       </div>
                     </div>
 
@@ -99,8 +115,8 @@ export default function Header() {
                         更多支持
                       </div>
                       <div className="flex flex-col space-y-3">
-                        <DropdownLink href="/forum">国际论坛</DropdownLink>
-                        <DropdownLink href="/news">我们的动态</DropdownLink>
+                        <DropdownLink href="/forum" onClick={closeDesktopMenus}>国际论坛</DropdownLink>
+                        <DropdownLink href="/news" onClick={closeDesktopMenus}>我们的动态</DropdownLink>
                       </div>
                     </div>
                   </div>
@@ -109,13 +125,21 @@ export default function Header() {
             </div>
 
             {/* 👇 "关于我们" 下拉菜单 - 全屏宽度面板 */}
-            <div className="group h-full flex items-center relative">
-              <button className="h-full flex items-center px-4 text-[15px] font-bold text-gray-700 group-hover:text-[#5c4ae3] transition-colors focus:outline-none">
+            <div 
+              className="h-full flex items-center relative"
+              onMouseEnter={() => setIsAboutMenuOpen(true)}
+              onMouseLeave={() => setIsAboutMenuOpen(false)}
+            >
+              <button className="h-full flex items-center px-4 text-[15px] font-bold text-gray-700 hover:text-[#5c4ae3] transition-colors focus:outline-none">
                 关于我们 <ChevronDown className="w-4 h-4 ml-1 opacity-50" />
               </button>
               
               {/* Mega Menu：横跨整个屏幕宽度的面板 - 美化设计 */}
-              <div className="fixed top-24 left-0 w-screen bg-gradient-to-b from-white to-off-white shadow-2xl border-t-4 border-primary opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-40">
+              <div className={`fixed top-24 left-0 w-screen bg-gradient-to-b from-white to-off-white shadow-2xl border-t-4 border-primary transition-all duration-300 transform z-40 ${
+                isAboutMenuOpen 
+                  ? 'opacity-100 visible translate-y-0' 
+                  : 'opacity-0 invisible translate-y-2'
+              }`}>
                 <div className="container mx-auto px-12 py-20 max-w-7xl">
                   <div className="mb-12">
                     <h3 className="text-3xl font-black text-navy tracking-tight flex items-center gap-3">
@@ -125,11 +149,11 @@ export default function Header() {
                     <p className="text-muted mt-3 text-base">探索我们的使命、团队和合作伙伴</p>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-                    <DropdownCard href="/about/vision" title="我们的愿景" description="我们的使命与目标" />
-                    <DropdownCard href="/about/story" title="我们的故事" description="组织发展历程" />
-                    <DropdownCard href="/about/team" title="我们的团队" description="认识团队成员" />
-                    <DropdownCard href="/about/contact" title="联系我们" description="获取帮助与支持" />
-                    <DropdownCard href="/about/partners" title="我们的伙伴" description="合作伙伴网络" />
+                    <DropdownCard href="/about/vision" title="我们的愿景" description="我们的使命与目标" onClick={closeDesktopMenus} />
+                    <DropdownCard href="/about/story" title="我们的故事" description="组织发展历程" onClick={closeDesktopMenus} />
+                    <DropdownCard href="/about/team" title="我们的团队" description="认识团队成员" onClick={closeDesktopMenus} />
+                    <DropdownCard href="/about/contact" title="联系我们" description="获取帮助与支持" onClick={closeDesktopMenus} />
+                    <DropdownCard href="/about/partners" title="我们的伙伴" description="合作伙伴网络" onClick={closeDesktopMenus} />
                   </div>
                 </div>
               </div>
@@ -230,10 +254,11 @@ export default function Header() {
 }
 
 // 下拉菜单链接组件 - 美化设计
-function DropdownLink({ href, children }: { href: string, children: React.ReactNode }) {
+function DropdownLink({ href, children, onClick }: { href: string, children: React.ReactNode, onClick?: () => void }) {
   return (
     <Link 
       href={href} 
+      onClick={onClick}
       className="group/link relative pl-6 pr-4 py-3.5 text-base font-semibold text-gray-800 hover:text-primary hover:bg-primary/8 rounded-lg transition-all duration-200 block"
     >
       <span className="absolute left-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-primary rounded-full opacity-0 group-hover/link:opacity-100 transition-all duration-200 transform scale-0 group-hover/link:scale-100 group-hover/link:translate-x-1"></span>
@@ -245,10 +270,11 @@ function DropdownLink({ href, children }: { href: string, children: React.ReactN
 }
 
 // 下拉菜单卡片组件 - 用于"关于我们"菜单
-function DropdownCard({ href, title, description }: { href: string, title: string, description: string }) {
+function DropdownCard({ href, title, description, onClick }: { href: string, title: string, description: string, onClick?: () => void }) {
   return (
     <Link 
       href={href}
+      onClick={onClick}
       className="group/card relative p-6 bg-surface border-2 border-transparent hover:border-primary/30 hover:shadow-lg rounded-card transition-all duration-300 block"
     >
       <div className="absolute top-4 right-4 w-2 h-2 bg-primary rounded-full opacity-0 group-hover/card:opacity-100 transition-opacity duration-200"></div>
