@@ -68,7 +68,25 @@ export const authConfig = {
             },
           });
 
-          if (!user || !user.password) {
+          if (!user) {
+            return null;
+          }
+
+          // 如果是手机登录（特殊标识）
+          if (credentials.password === 'sms_verified') {
+            // 手机登录，直接返回用户信息
+            // 注意：验证码验证应该在调用 authorize 之前完成
+            return {
+              id: user.id,
+              phone: user.phone,
+              name: user.nickname,
+              image: user.avatar,
+              role: user.role,
+            };
+          }
+
+          // 密码登录：需要验证密码
+          if (!user.password) {
             return null;
           }
 

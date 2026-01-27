@@ -2,16 +2,15 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Loader2, Phone, Lock, User, MessageSquare } from 'lucide-react';
+import { Loader2, Phone, Lock, MessageSquare } from 'lucide-react';
 
-export default function RegisterForm() {
+export default function ForgotPasswordForm() {
   const router = useRouter();
-  const [username, setUsername] = useState('');
+  const [step, setStep] = useState<'phone' | 'reset'>('phone');
   const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSendingCode, setIsSendingCode] = useState(false);
   const [countdown, setCountdown] = useState(0);
@@ -37,7 +36,7 @@ export default function RegisterForm() {
         },
         body: JSON.stringify({
           phone,
-          type: 'register',
+          type: 'reset-password',
         }),
       });
 
@@ -49,6 +48,7 @@ export default function RegisterForm() {
       }
 
       setSuccess('验证码已发送，请查收短信');
+      setStep('reset');
       // 开始倒计时（60秒）
       setCountdown(60);
       const timer = setInterval(() => {
@@ -73,33 +73,11 @@ export default function RegisterForm() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // 重置密码
+  const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccess('');
-
-    // 验证用户名
-    if (!username || username.trim().length === 0) {
-      setError('请输入用户名');
-      return;
-    }
-
-    // 验证用户名长度（2-20个字符）
-    if (username.trim().length < 2) {
-      setError('用户名至少需要2个字符');
-      return;
-    }
-
-    if (username.trim().length > 20) {
-      setError('用户名不能超过20个字符');
-      return;
-    }
-
-    // 验证手机号格式
-    if (!phone || !/^1[3-9]\d{9}$/.test(phone)) {
-      setError('请输入正确的11位手机号');
-      return;
-    }
 
     // 验证验证码
     if (!verificationCode || verificationCode.length !== 6) {
@@ -108,58 +86,121 @@ export default function RegisterForm() {
     }
 
     // 验证密码长度
-    if (password.length < 6) {
+    if (newPassword.length < 6) {
       setError('密码长度至少为6位');
       return;
     }
 
     // 验证密码匹配
-    if (password !== confirmPassword) {
+    if (newPassword !== confirmPassword) {
       setError('两次输入的密码不一致，请检查后重试');
       return;
     }
 
     setIsLoading(true);
-    setSuccess('正在注册，请稍候...');
+    setSuccess('正在重置密码，请稍候...');
 
     try {
-      const response = await fetch('/api/auth/register', {
+      const response = await fetch('/api/auth/reset-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: username.trim(),
           phone,
-          password,
-          verificationCode,
+          code: verificationCode,
+          newPassword,
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || '注册失败，请稍后重试');
+        setError(data.error || '密码重置失败，请稍后重试');
         setSuccess('');
         return;
       }
 
-      // 注册成功，显示提示并跳转
-      setSuccess('注册成功！正在跳转到登录页面...');
+      // 重置成功，显示提示并跳转
+      setSuccess('密码重置成功！正在跳转到登录页面...');
       setTimeout(() => {
-        router.push('/login?registered=true');
-      }, 1000);
+        router.push('/login');
+      }, 1500);
     } catch (err) {
-      setError('注册失败，请检查网络连接后重试');
+      setError('密码重置失败，请检查网络连接后重试');
       setSuccess('');
-      console.error('注册错误:', err);
+      console.error('重置密码错误:', err);
     } finally {
       setIsLoading(false);
     }
   };
 
+  if (step === 'phone') {
+    return (
+      <form onSubmit={(e) => { e.preventDefault(); handleSendCode(); }} className="space-y-6">
+        {/* 成功提示 */}
+        {success && (
+          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
+            {success}
+          </div>
+        )}
+
+        {/* 错误提示 */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
+
+        {/* 手机号输入框 */}
+        <div>
+          <label htmlFor="phone" className="block text-sm font-semibold text-text-primary mb-2">
+            手机号 <span className="text-red-500">*</span>
+          </label>
+          <div className="relative">
+            <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-muted w-5 h-5" />
+            <input
+              id="phone"
+              type="tel"
+              value={phone}
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, '').slice(0, 11);
+                setPhone(value);
+                setError('');
+              }}
+              required
+              disabled={isLoading || isSendingCode}
+              maxLength={11}
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all bg-white text-text-primary disabled:bg-gray-50 disabled:cursor-not-allowed"
+              placeholder="请输入11位手机号"
+            />
+          </div>
+          {phone && !/^1[3-9]\d{9}$/.test(phone) && (
+            <p className="text-xs text-red-500 mt-1">请输入正确的手机号格式（11位数字，以1开头）</p>
+          )}
+        </div>
+
+        {/* 提交按钮 */}
+        <button
+          type="submit"
+          disabled={isLoading || isSendingCode || !phone || !/^1[3-9]\d{9}$/.test(phone)}
+          className="w-full btn-primary flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isSendingCode ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span>发送中...</span>
+            </>
+          ) : (
+            <span>发送验证码</span>
+          )}
+        </button>
+      </form>
+    );
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleResetPassword} className="space-y-6">
       {/* 成功提示 */}
       {success && (
         <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
@@ -174,65 +215,20 @@ export default function RegisterForm() {
         </div>
       )}
 
-      {/* 用户名输入框 */}
+      {/* 手机号显示（只读） */}
       <div>
-        <label htmlFor="username" className="block text-sm font-semibold text-text-primary mb-2">
-          用户名 <span className="text-red-500">*</span>
-        </label>
-        <div className="relative">
-          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-muted w-5 h-5" />
-          <input
-            id="username"
-            type="text"
-            value={username}
-            onChange={(e) => {
-              setUsername(e.target.value);
-              setError('');
-            }}
-            required
-            disabled={isLoading}
-            maxLength={20}
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all bg-white text-text-primary disabled:bg-gray-50 disabled:cursor-not-allowed"
-            placeholder="请输入用户名（2-20个字符）"
-          />
-        </div>
-        {username && username.trim().length > 0 && username.trim().length < 2 && (
-          <p className="text-xs text-red-500 mt-1">用户名至少需要2个字符</p>
-        )}
-        {username && username.trim().length >= 2 && username.trim().length <= 20 && (
-          <p className="text-xs text-green-600 mt-1">用户名格式正确</p>
-        )}
-        {username && username.trim().length > 20 && (
-          <p className="text-xs text-red-500 mt-1">用户名不能超过20个字符</p>
-        )}
-      </div>
-
-      {/* 手机号输入框 */}
-      <div>
-        <label htmlFor="phone" className="block text-sm font-semibold text-text-primary mb-2">
-          手机号 <span className="text-red-500">*</span>
+        <label className="block text-sm font-semibold text-text-primary mb-2">
+          手机号
         </label>
         <div className="relative">
           <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-muted w-5 h-5" />
           <input
-            id="phone"
             type="tel"
             value={phone}
-            onChange={(e) => {
-              const value = e.target.value.replace(/\D/g, '').slice(0, 11);
-              setPhone(value);
-              setError('');
-            }}
-            required
-            disabled={isLoading}
-            maxLength={11}
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all bg-white text-text-primary disabled:bg-gray-50 disabled:cursor-not-allowed"
-            placeholder="请输入11位手机号"
+            disabled
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-text-primary cursor-not-allowed"
           />
         </div>
-        {phone && !/^1[3-9]\d{9}$/.test(phone) && (
-          <p className="text-xs text-red-500 mt-1">请输入正确的手机号格式（11位数字，以1开头）</p>
-        )}
       </div>
 
       {/* 验证码输入框 */}
@@ -262,7 +258,7 @@ export default function RegisterForm() {
           <button
             type="button"
             onClick={handleSendCode}
-            disabled={isSendingCode || countdown > 0 || !phone || !/^1[3-9]\d{9}$/.test(phone) || isLoading}
+            disabled={isSendingCode || countdown > 0 || isLoading}
             className="px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap text-sm font-semibold"
           >
             {isSendingCode ? (
@@ -273,7 +269,7 @@ export default function RegisterForm() {
             ) : countdown > 0 ? (
               `${countdown}秒后重试`
             ) : (
-              '发送验证码'
+              '重新发送'
             )}
           </button>
         </div>
@@ -282,31 +278,31 @@ export default function RegisterForm() {
         )}
       </div>
 
-      {/* 密码输入框 */}
+      {/* 新密码输入框 */}
       <div>
-        <label htmlFor="password" className="block text-sm font-semibold text-text-primary mb-2">
-          密码 <span className="text-red-500">*</span>
+        <label htmlFor="newPassword" className="block text-sm font-semibold text-text-primary mb-2">
+          新密码 <span className="text-red-500">*</span>
         </label>
         <div className="relative">
           <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-muted w-5 h-5" />
           <input
-            id="password"
+            id="newPassword"
             type="password"
-            value={password}
+            value={newPassword}
             onChange={(e) => {
-              setPassword(e.target.value);
+              setNewPassword(e.target.value);
               setError('');
             }}
             required
             disabled={isLoading}
             className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all bg-white text-text-primary disabled:bg-gray-50 disabled:cursor-not-allowed"
-            placeholder="请输入密码（至少6位）"
+            placeholder="请输入新密码（至少6位）"
           />
         </div>
-        {password && password.length > 0 && password.length < 6 && (
+        {newPassword && newPassword.length > 0 && newPassword.length < 6 && (
           <p className="text-xs text-red-500 mt-1">密码长度至少为6位</p>
         )}
-        {password && password.length >= 6 && (
+        {newPassword && newPassword.length >= 6 && (
           <p className="text-xs text-green-600 mt-1">密码强度符合要求</p>
         )}
       </div>
@@ -329,13 +325,13 @@ export default function RegisterForm() {
             required
             disabled={isLoading}
             className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all bg-white text-text-primary disabled:bg-gray-50 disabled:cursor-not-allowed"
-            placeholder="请再次输入密码"
+            placeholder="请再次输入新密码"
           />
         </div>
-        {confirmPassword && password && confirmPassword !== password && (
+        {confirmPassword && newPassword && confirmPassword !== newPassword && (
           <p className="text-xs text-red-500 mt-1">两次输入的密码不一致</p>
         )}
-        {confirmPassword && password && confirmPassword === password && password.length >= 6 && (
+        {confirmPassword && newPassword && confirmPassword === newPassword && newPassword.length >= 6 && (
           <p className="text-xs text-green-600 mt-1">密码确认成功</p>
         )}
       </div>
@@ -349,22 +345,12 @@ export default function RegisterForm() {
         {isLoading ? (
           <>
             <Loader2 className="w-5 h-5 animate-spin" />
-            <span>注册中...</span>
+            <span>重置中...</span>
           </>
         ) : (
-          <span>注册</span>
+          <span>重置密码</span>
         )}
       </button>
-
-      {/* 登录链接 */}
-      <div className="text-center pt-4">
-        <p className="text-sm text-text-secondary">
-          已有账号？{' '}
-          <Link href="/login" className="text-primary font-semibold hover:text-primary-hover transition-colors">
-            去登录
-          </Link>
-        </p>
-      </div>
     </form>
   );
 }

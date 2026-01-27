@@ -16,12 +16,12 @@ import { hashPassword } from '@/lib/auth-utils';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { username, phone, password } = body;
+    const { username, phone, password, verificationCode } = body;
 
     // 验证必填字段
-    if (!username || !phone || !password) {
+    if (!username || !phone || !password || !verificationCode) {
       return NextResponse.json(
-        { error: '请填写所有必填字段（用户名、手机号、密码）' },
+        { error: '请填写所有必填字段（用户名、手机号、密码、验证码）' },
         { status: 400 }
       );
     }
@@ -67,6 +67,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 验证验证码格式
+    if (verificationCode.length !== 6 || !/^\d{6}$/.test(verificationCode)) {
+      return NextResponse.json(
+        { error: '验证码格式不正确' },
+        { status: 400 }
+      );
+    }
+
     // 检查手机号是否已存在
     const existingUser = await db.user.findUnique({
       where: {
@@ -80,6 +88,35 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // 验证验证码
+    const codeRecord = await db.verificationCode.findFirst({
+      where: {
+        phone,
+        type: 'register',
+        code: verificationCode,
+        expiresAt: {
+          gte: new Date(), // 未过期
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    if (!codeRecord) {
+      return NextResponse.json(
+        { error: '验证码错误或已过期，请重新获取' },
+        { status: 400 }
+      );
+    }
+
+    // 验证成功后删除验证码（一次性使用）
+    await db.verificationCode.delete({
+      where: {
+        id: codeRecord.id,
+      },
+    });
 
     // 使用 bcrypt 加密密码
     const hashedPassword = await hashPassword(password);
