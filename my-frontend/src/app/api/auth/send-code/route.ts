@@ -161,7 +161,8 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // 开发环境返回验证码（使用之前定义的 isDev 变量）
+    // 开发环境返回验证码
+    const isDev = process.env.NODE_ENV === 'development' || !process.env.NODE_ENV;
     const responseData: any = {
       success: true,
       message: '验证码发送成功',
