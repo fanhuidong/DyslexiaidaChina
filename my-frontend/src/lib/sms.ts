@@ -51,15 +51,17 @@ export async function sendVerificationCode(
     
     // 生产环境：即使未配置也输出到日志（用于调试）
     // 但返回错误，提示需要配置短信服务
-    console.error('\n========================================');
-    console.error('❌ [SMS] 短信宝配置缺失');
-    console.error('========================================');
-    console.error('环境变量 SMS_BAO_USERNAME 或 SMS_BAO_PASSWORD 未配置');
-    console.error('手机号：', phone);
-    console.error('验证码：', code, '（仅用于调试，用户无法收到）');
-    console.error('类型：', type);
-    console.error('========================================');
-    console.error('请参考 PRODUCTION_SMS_SETUP.md 配置短信服务\n');
+    // 使用 console.log 而不是 console.error，确保日志可见
+    console.log('\n========================================');
+    console.log('❌ [SMS] 短信宝配置缺失');
+    console.log('========================================');
+    console.log('环境变量 SMS_BAO_USERNAME 或 SMS_BAO_PASSWORD 未配置');
+    console.log(`手机号：${phone}`);
+    console.log(`验证码：${code}（仅用于调试，用户无法收到）`);
+    console.log(`类型：${type}`);
+    console.log(`环境：${process.env.NODE_ENV || '未设置'}`);
+    console.log('========================================');
+    console.log('请参考 PRODUCTION_SMS_SETUP.md 配置短信服务\n');
     
     return {
       success: false,
@@ -120,19 +122,22 @@ export async function sendVerificationCode(
       };
 
       const errorMessage = errorMessages[result] || `发送失败，错误码：${result}`;
-      console.error(`❌ [SMS] 短信发送失败：${errorMessage} (${result})`);
+      
+      // 所有环境都输出详细日志（包括验证码，用于调试）
+      console.log('\n========================================');
+      console.log('❌ [SMS] 短信发送失败');
+      console.log('========================================');
+      console.log(`手机号：${phone}`);
+      console.log(`验证码：${code}（用于调试）`);
+      console.log(`类型：${type}`);
+      console.log(`错误码：${result}`);
+      console.log(`错误信息：${errorMessage}`);
+      console.log(`环境：${process.env.NODE_ENV || '未设置'}`);
+      console.log('========================================\n');
       
       // 开发环境：即使失败也返回成功（方便测试）
       const isDev = process.env.NODE_ENV === 'development' || !process.env.NODE_ENV;
       if (isDev) {
-        console.log('\n========================================');
-        console.log('📱 [开发模式] 短信验证码（短信发送失败，但返回验证码）');
-        console.log('========================================');
-        console.log(`手机号：${phone}`);
-        console.log(`验证码：${code}`);
-        console.log(`类型：${type}`);
-        console.log(`错误：${errorMessage}`);
-        console.log('========================================\n');
         return {
           success: true,
           message: '验证码已发送（开发模式）',
@@ -146,18 +151,20 @@ export async function sendVerificationCode(
       };
     }
   } catch (error) {
-    console.error('❌ [SMS] 短信发送异常:', error);
+    // 所有环境都输出详细日志（包括验证码，用于调试）
+    console.log('\n========================================');
+    console.log('❌ [SMS] 短信发送异常');
+    console.log('========================================');
+    console.log(`手机号：${phone}`);
+    console.log(`验证码：${code}（用于调试）`);
+    console.log(`类型：${type}`);
+    console.log(`环境：${process.env.NODE_ENV || '未设置'}`);
+    console.log(`错误：`, error);
+    console.log('========================================\n');
     
     // 开发环境：即使异常也返回成功（方便测试）
     const isDev = process.env.NODE_ENV === 'development' || !process.env.NODE_ENV;
     if (isDev) {
-      console.log('\n========================================');
-      console.log('📱 [开发模式] 短信验证码（发送异常，但返回验证码）');
-      console.log('========================================');
-      console.log(`手机号：${phone}`);
-      console.log(`验证码：${code}`);
-      console.log(`类型：${type}`);
-      console.log('========================================\n');
       return {
         success: true,
         message: '验证码已发送（开发模式）',

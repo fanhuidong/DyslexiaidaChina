@@ -93,16 +93,47 @@ export async function POST(request: NextRequest) {
     // 生成验证码
     const code = generateVerificationCode();
 
-    // 添加日志（开发环境）
-    const isDev = process.env.NODE_ENV === 'development' || !process.env.NODE_ENV;
-    if (isDev) {
-      console.log(`\n🔔 [API] 准备发送验证码 - 手机号：${phone}，类型：${type}`);
-    }
+    // 添加详细日志（所有环境都输出，便于调试）
+    console.log('\n========================================');
+    console.log('🔔 [API] 准备发送验证码');
+    console.log('========================================');
+    console.log(`手机号：${phone}`);
+    console.log(`验证码：${code}`);
+    console.log(`类型：${type}`);
+    console.log(`环境：${process.env.NODE_ENV || '未设置'}`);
+    console.log(`短信宝配置：${process.env.SMS_BAO_USERNAME ? '已配置' : '未配置'}`);
+    console.log('========================================\n');
 
     // 发送短信
     const smsResult = await sendVerificationCode(phone, code, type as any);
 
+    // 记录发送结果（所有环境都输出）
+    console.log('\n========================================');
+    console.log('📤 [API] 短信发送结果');
+    console.log('========================================');
+    console.log(`手机号：${phone}`);
+    console.log(`验证码：${code}`);
+    console.log(`类型：${type}`);
+    console.log(`发送成功：${smsResult.success}`);
+    console.log(`消息：${smsResult.message}`);
+    console.log('========================================\n');
+
     if (!smsResult.success) {
+      // 即使发送失败，也保存验证码到数据库（用于调试）
+      // 这样可以通过数据库查询验证码
+      try {
+        const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+        await db.verificationCode.deleteMany({
+          where: { phone, type },
+        });
+        await db.verificationCode.create({
+          data: { phone, code, type, expiresAt },
+        });
+        console.log(`⚠️ [API] 验证码已保存到数据库（用于调试）- 验证码：${code}`);
+      } catch (dbError) {
+        console.error('❌ [API] 保存验证码到数据库失败:', dbError);
+      }
+
       return NextResponse.json(
         { error: smsResult.message || '验证码发送失败，请稍后重试' },
         { status: 500 }
