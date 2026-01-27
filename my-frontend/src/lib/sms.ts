@@ -32,11 +32,16 @@ export async function sendVerificationCode(
 
   // 检查配置
   if (!username || !password) {
-    console.error('❌ [SMS] 短信宝配置缺失：SMS_BAO_USERNAME 或 SMS_BAO_PASSWORD');
-    
-    // 开发环境：输出验证码到控制台
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`📱 [开发模式] 验证码：${code}，手机号：${phone}，类型：${type}`);
+    // 开发环境：输出验证码到控制台（更明显的输出）
+    const isDev = process.env.NODE_ENV === 'development' || !process.env.NODE_ENV;
+    if (isDev) {
+      console.log('\n========================================');
+      console.log('📱 [开发模式] 短信验证码');
+      console.log('========================================');
+      console.log(`手机号：${phone}`);
+      console.log(`验证码：${code}`);
+      console.log(`类型：${type}`);
+      console.log('========================================\n');
       return {
         success: true,
         message: '验证码已发送（开发模式）',
@@ -44,6 +49,7 @@ export async function sendVerificationCode(
       };
     }
     
+    console.error('❌ [SMS] 短信宝配置缺失：SMS_BAO_USERNAME 或 SMS_BAO_PASSWORD');
     return {
       success: false,
       message: '短信服务未配置',
@@ -106,8 +112,16 @@ export async function sendVerificationCode(
       console.error(`❌ [SMS] 短信发送失败：${errorMessage} (${result})`);
       
       // 开发环境：即使失败也返回成功（方便测试）
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`📱 [开发模式] 验证码：${code}，手机号：${phone}，类型：${type}`);
+      const isDev = process.env.NODE_ENV === 'development' || !process.env.NODE_ENV;
+      if (isDev) {
+        console.log('\n========================================');
+        console.log('📱 [开发模式] 短信验证码（短信发送失败，但返回验证码）');
+        console.log('========================================');
+        console.log(`手机号：${phone}`);
+        console.log(`验证码：${code}`);
+        console.log(`类型：${type}`);
+        console.log(`错误：${errorMessage}`);
+        console.log('========================================\n');
         return {
           success: true,
           message: '验证码已发送（开发模式）',
@@ -124,8 +138,15 @@ export async function sendVerificationCode(
     console.error('❌ [SMS] 短信发送异常:', error);
     
     // 开发环境：即使异常也返回成功（方便测试）
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`📱 [开发模式] 验证码：${code}，手机号：${phone}，类型：${type}`);
+    const isDev = process.env.NODE_ENV === 'development' || !process.env.NODE_ENV;
+    if (isDev) {
+      console.log('\n========================================');
+      console.log('📱 [开发模式] 短信验证码（发送异常，但返回验证码）');
+      console.log('========================================');
+      console.log(`手机号：${phone}`);
+      console.log(`验证码：${code}`);
+      console.log(`类型：${type}`);
+      console.log('========================================\n');
       return {
         success: true,
         message: '验证码已发送（开发模式）',

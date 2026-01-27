@@ -93,6 +93,12 @@ export async function POST(request: NextRequest) {
     // 生成验证码
     const code = generateVerificationCode();
 
+    // 添加日志（开发环境）
+    const isDev = process.env.NODE_ENV === 'development' || !process.env.NODE_ENV;
+    if (isDev) {
+      console.log(`\n🔔 [API] 准备发送验证码 - 手机号：${phone}，类型：${type}`);
+    }
+
     // 发送短信
     const smsResult = await sendVerificationCode(phone, code, type as any);
 
@@ -124,15 +130,18 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(
-      {
-        success: true,
-        message: '验证码发送成功',
-        // 开发环境返回验证码，生产环境不返回
-        ...(process.env.NODE_ENV === 'development' && { code }),
-      },
-      { status: 200 }
-    );
+    // 开发环境返回验证码（使用之前定义的 isDev 变量）
+    const responseData: any = {
+      success: true,
+      message: '验证码发送成功',
+    };
+    
+    if (isDev) {
+      responseData.code = code;
+      console.log(`✅ [API] 验证码已生成并返回 - 验证码：${code}`);
+    }
+
+    return NextResponse.json(responseData, { status: 200 });
   } catch (error) {
     console.error('❌ [send-code] 发送验证码错误:', error);
     return NextResponse.json(
