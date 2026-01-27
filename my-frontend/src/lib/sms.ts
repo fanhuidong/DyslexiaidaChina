@@ -28,7 +28,12 @@ export async function sendVerificationCode(
 ): Promise<SendSMSResult> {
   const username = process.env.SMS_BAO_USERNAME;
   const password = process.env.SMS_BAO_PASSWORD; // 应该是MD5加密后的密码
+  // 默认使用 HTTP，如果支持 HTTPS 可以在环境变量中配置
   const apiUrl = process.env.SMS_BAO_API_URL || 'http://api.smsbao.com/sms';
+  
+  // 记录使用的 API URL（不包含敏感信息）
+  const safeUrl = apiUrl.replace(/[up]=[^&]*/g, '[已隐藏]');
+  console.log(`📡 [SMS] 使用 API URL: ${safeUrl}`);
 
   // 检查配置
   if (!username || !password) {
@@ -85,8 +90,61 @@ export async function sendVerificationCode(
     const encodedContent = encodeURIComponent(content);
     const url = `${apiUrl}?u=${username}&p=${password}&m=${phone}&c=${encodedContent}`;
 
-    const response = await fetch(url);
-    const result = await response.text();
+    // 使用 AbortController 设置超时（30秒）
+    let response: Response | null = null;
+    let result: string = '';
+    const maxRetries = 3; // 最多重试3次
+
+    // 重试机制
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30秒超时
+      
+      try {
+        console.log(`📡 [SMS] 尝试发送短信 (第 ${attempt}/${maxRetries} 次) - URL: ${apiUrl}`);
+        
+        response = await fetch(url, {
+          signal: controller.signal,
+          // 增加超时和重试相关配置
+          headers: {
+            'User-Agent': 'Mozilla/5.0',
+          },
+        });
+        
+        clearTimeout(timeoutId);
+        if (response) {
+          result = await response.text();
+          break; // 成功，退出重试循环
+        }
+      } catch (error: any) {
+        clearTimeout(timeoutId);
+        
+        // 如果是最后一次尝试，抛出错误
+        if (attempt === maxRetries) {
+          throw error;
+        }
+        
+        // 等待后重试（指数退避）
+        const waitTime = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+        console.log(`⚠️ [SMS] 发送失败，${waitTime}ms 后重试... (错误: ${error.message})`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+      }
+    }
+
+    // 如果所有重试都失败，result 可能为空
+    if (!result && response) {
+      try {
+        result = await response.text();
+      } catch (e) {
+        // 如果读取响应失败，使用空字符串
+        result = '';
+      }
+    }
+
+    // 如果仍然没有结果，说明所有重试都失败了
+    if (!result) {
+      throw new Error('所有重试都失败，无法获取响应');
+    }
 
     // 短信宝返回码说明：
     // 0 - 发送成功
