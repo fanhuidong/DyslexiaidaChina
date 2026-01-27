@@ -49,10 +49,21 @@ export async function sendVerificationCode(
       };
     }
     
-    console.error('❌ [SMS] 短信宝配置缺失：SMS_BAO_USERNAME 或 SMS_BAO_PASSWORD');
+    // 生产环境：即使未配置也输出到日志（用于调试）
+    // 但返回错误，提示需要配置短信服务
+    console.error('\n========================================');
+    console.error('❌ [SMS] 短信宝配置缺失');
+    console.error('========================================');
+    console.error('环境变量 SMS_BAO_USERNAME 或 SMS_BAO_PASSWORD 未配置');
+    console.error('手机号：', phone);
+    console.error('验证码：', code, '（仅用于调试，用户无法收到）');
+    console.error('类型：', type);
+    console.error('========================================');
+    console.error('请参考 PRODUCTION_SMS_SETUP.md 配置短信服务\n');
+    
     return {
       success: false,
-      message: '短信服务未配置',
+      message: '短信服务未配置，请联系管理员',
     };
   }
 
