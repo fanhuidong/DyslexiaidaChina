@@ -351,9 +351,9 @@ export default function Header() {
                 <div>
                   <div className="text-sm font-bold text-gray-900 mb-2">寻找帮助</div>
                   <div className="pl-2 flex flex-col space-y-2 text-sm font-medium text-gray-600">
-                    <Link href="/category/adult" onClick={closeMobileMenu}>成人</Link>
-                    <Link href="/category/teen" onClick={closeMobileMenu}>青少年</Link>
-                    <Link href="/category/educator" onClick={closeMobileMenu}>教育者</Link>
+                    <Link href="/help/adult" onClick={closeMobileMenu}>成人</Link>
+                    <Link href="/help/teenager" onClick={closeMobileMenu}>青少年</Link>
+                    <Link href="/help/educator" onClick={closeMobileMenu}>教育者</Link>
                   </div>
                 </div>
                 {/* 更多支持 */}
